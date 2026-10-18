@@ -89,7 +89,26 @@ class KisaanViewModel : ViewModel() {
     }
 
     fun setLanguage(language: Language) {
-        _uiState.value = _uiState.value.copy(selectedLanguage = language)
+        val welcomeText = when (language) {
+            Language.HINDI -> "नमस्ते किसान भाई! 🙏 मैं आपका किसान साथी एआई सहायक हूँ। आज मैं आपकी फसल, मौसम, सिंचाई, मिट्टी या सरकारी योजनाओं में क्या मदद कर सकता हूँ?"
+            Language.PUNJABI -> "ਸਤਿ ਸ਼੍ਰੀ ਅਕਾਲ ਕਿਸਾਨ ਵੀਰੋ! 🙏 ਮੈਂ ਤੁਹਾਡਾ ਕਿਸਾਨ ਸਾਥੀ ਏਆਈ ਸਹਾਇਕ ਹਾਂ। ਫ਼ਸਲਾਂ, ਮੌਸਮ, ਸਿੰਚਾਈ, ਜਾਂ ਸਰਕਾਰੀ ਸਕੀਮਾਂ ਬਾਰੇ ਕੋਈ ਵੀ ਸਵਾਲ ਪੁੱਛੋ।"
+            Language.GUJARATI -> "નમસ્તે ખેડૂત મિત્ર! 🙏 હું તમારો કિસાન સાથી AI સહાયક છું. પાક, હવામાન, સિંચાઈ અથવા સરકારી યોજનાઓ અંગે પ્રશ્નો પૂછી શકો છો."
+            Language.MARATHI -> "नमस्कार शेतकरी बंधूंनो! 🙏 मी तुमचा किसान साथी एआय सहाय्यक आहे. पीक, हवामान, सिंचन किंवा सरकारी योजनांविषयी विचारा."
+            Language.BENGALI -> "নমস্কার কৃষক ভাই! 🙏 আমি আপনার কিষাণ সাথী এআই সহকারী। ফসল, আবহাওয়া, সেচ বা সরকারি প্রকল্প সম্পর্কে যেকোনো প্রশ্ন করুন।"
+            Language.TAMIL -> "வணக்கம் விவசாய தோழரே! 🙏 நான் உங்கள் கிசான் சாதி AI உதவியாளர். பயிர்கள், வானிலை, பாசனம் அல்லது அரசு திட்டங்கள் பற்றி கேளுங்கள்."
+            Language.TELUGU -> "నమస్కారం రైతు సోదరా! 🙏 నేను మీ కిసాన్ సాథి AI సహాయకుడిని. పంటలు, వాతావరణం, సాగునీరు లేదా ప్రభుత్వ పథకాల గురించి అడగండి."
+            Language.ENGLISH -> "Namaste, Farmer Friend! 🙏 I am your Kisaan Sathi AI Farming Assistant. How can I help you today with crops, weather advisories, irrigation planning, soil care, or government schemes?"
+        }
+        val welcomeMsg = ChatMessage(
+            id = UUID.randomUUID().toString(),
+            role = MessageRole.ASSISTANT,
+            text = welcomeText,
+            timestamp = "Just now"
+        )
+        _uiState.value = _uiState.value.copy(
+            selectedLanguage = language,
+            chatMessages = listOf(welcomeMsg)
+        )
     }
 
     fun toggleDarkMode() {

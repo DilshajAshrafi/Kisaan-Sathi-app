@@ -1,5 +1,6 @@
 package com.example.kisaansathi.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Air
@@ -47,8 +49,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.example.kisaansathi.data.AgriLocale
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,7 +91,8 @@ fun HomeScreen(
     onLocationSelected: (String) -> Unit = {},
     onRefreshWeather: () -> Unit = {},
     onNavigate: (ScreenRoute) -> Unit,
-    onEmergencyCall: () -> Unit
+    onEmergencyCall: () -> Unit,
+    onLanguageChange: (Language) -> Unit = {}
 ) {
     val isHi = currentLanguage == Language.HINDI
     var showLocationDialog by remember { mutableStateOf(false) }
@@ -99,10 +104,18 @@ fun HomeScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Quick Regional Language Selector
+        item {
+            QuickLanguageStrip(
+                currentLanguage = currentLanguage,
+                onLanguageSelected = onLanguageChange
+            )
+        }
+
         // Hero Header Card
         item {
             HeroHeaderCard(
-                isHi = isHi,
+                currentLanguage = currentLanguage,
                 onAskAiClick = { onNavigate(ScreenRoute.AGRI_ASSISTANT) }
             )
         }
@@ -111,7 +124,7 @@ fun HomeScreen(
         item {
             WeatherAdvisoryCard(
                 weather = weatherInfo,
-                isHi = isHi,
+                currentLanguage = currentLanguage,
                 isLoading = isWeatherLoading,
                 onLocationClick = { showLocationDialog = true },
                 onRefresh = onRefreshWeather
@@ -121,7 +134,7 @@ fun HomeScreen(
         // Emergency Helpline Card
         item {
             EmergencyHelplineCard(
-                isHi = isHi,
+                currentLanguage = currentLanguage,
                 onCallClick = onEmergencyCall
             )
         }
@@ -129,7 +142,16 @@ fun HomeScreen(
         // Primary Services Section
         item {
             Text(
-                text = if (isHi) "मुख्य सेवाएं व परामर्श" else "Key Farming Services",
+                text = when (currentLanguage) {
+                    Language.PUNJABI -> "ਮੁੱਖ ਖੇਤੀਬਾੜੀ ਸੇਵਾਵਾਂ"
+                    Language.GUJARATI -> "મુખ્ય ખેતી સેવાઓ"
+                    Language.MARATHI -> "प्रमुख शेती सेवा व सल्ला"
+                    Language.BENGALI -> "প্রধান কৃষি পরিষেবা"
+                    Language.TAMIL -> "முக்கிய விவசாய சேவைகள்"
+                    Language.TELUGU -> "ప్రధాన వ్యవసాయ సేవలు"
+                    Language.HINDI -> "मुख्य सेवाएं व परामर्श"
+                    Language.ENGLISH -> "Key Farming Services"
+                },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = Green900
@@ -142,11 +164,20 @@ fun HomeScreen(
                     icon = Icons.Default.Eco,
                     iconBg = Green100,
                     iconTint = Green800,
-                    title = if (isHi) "फसल परामर्श" else "Crop Consultation",
-                    subtitle = if (isHi)
-                        "बुवाई, फसल चक्र, बीज उपचार और सही पोषण की वैज्ञानिक सलाह।"
+                    title = when (currentLanguage) {
+                        Language.PUNJABI -> "ਫ਼ਸਲ ਸਲਾਹ ਤੇ ਪ੍ਰਬੰਧਨ"
+                        Language.GUJARATI -> "પાક સલાહ અને વ્યવસ્થાપન"
+                        Language.MARATHI -> "पीक सल्ला व व्यवस्थापन"
+                        Language.BENGALI -> "ফসল পরামর্শ ও পরিচর্যা"
+                        Language.TAMIL -> "பயிர் ஆலோசனை"
+                        Language.TELUGU -> "పంట సలహా & నిర్వహణ"
+                        Language.HINDI -> "फसल परामर्श"
+                        Language.ENGLISH -> "Crop Consultation"
+                    },
+                    subtitle = if (currentLanguage == Language.ENGLISH)
+                        "Scientific advice on sowing dates, seed quality, spacing, and crop rotation."
                     else
-                        "Scientific advice on sowing dates, seed quality, spacing, and crop rotation.",
+                        "बुवाई, फसल चक्र, बीज उपचार और सही पोषण की वैज्ञानिक सलाह।",
                     tag = "service_card_crop",
                     onClick = { onNavigate(ScreenRoute.CROP_CONSULTATION) }
                 )
@@ -155,11 +186,20 @@ fun HomeScreen(
                     icon = Icons.Default.WaterDrop,
                     iconBg = Color(0xFFE5F3FB),
                     iconTint = Color(0xFF1976D2),
-                    title = if (isHi) "सिंचाई प्रबंधन" else "Irrigation Support",
-                    subtitle = if (isHi)
-                        "ड्रिप व स्प्रिंकलर प्रणाली, जल बजट कैलकुलेटर और जल बचत तकनीक।"
+                    title = when (currentLanguage) {
+                        Language.PUNJABI -> "ਸਿੰਚਾਈ ਪ੍ਰਬੰਧਨ"
+                        Language.GUJARATI -> "સિંચાઈ વ્યવસ્થાપન"
+                        Language.MARATHI -> "सिंचन व्यवस्थापन"
+                        Language.BENGALI -> "সেচ ব্যবস্থাপনা"
+                        Language.TAMIL -> "பாசன மேலாண்மை"
+                        Language.TELUGU -> "నీటిపారుదల ప్రణాళిక"
+                        Language.HINDI -> "सिंचाई प्रबंधन"
+                        Language.ENGLISH -> "Irrigation Support"
+                    },
+                    subtitle = if (currentLanguage == Language.ENGLISH)
+                        "Smart irrigation planner: Drip, sprinkler methods & water calculation."
                     else
-                        "Smart irrigation planner: Drip, sprinkler methods & water calculation.",
+                        "ड्रिप व स्प्रिंकलर प्रणाली, जल बजट कैलकुलेटर और जल बचत तकनीक।",
                     tag = "service_card_irrigation",
                     onClick = { onNavigate(ScreenRoute.IRRIGATION_SUPPORT) }
                 )
@@ -168,11 +208,20 @@ fun HomeScreen(
                     icon = Icons.Default.BugReport,
                     iconBg = Gold100,
                     iconTint = Brown800,
-                    title = if (isHi) "मृदा व कीट संरक्षण" else "Soil & Pest Care",
-                    subtitle = if (isHi)
-                        "मृदा स्वास्थ्य कार्ड परीक्षण, जैविक कीट निवारक और सुरक्षित कीटनाशक निर्देश।"
+                    title = when (currentLanguage) {
+                        Language.PUNJABI -> "ਮਿੱਟੀ ਤੇ ਕੀੜੇ ਸੁਰੱਖਿਆ"
+                        Language.GUJARATI -> "માટી અને જીવાત સંભાળ"
+                        Language.MARATHI -> "माती व कीड नियंत्रण"
+                        Language.BENGALI -> "মাটি ও কীটপতঙ্গ যত্ন"
+                        Language.TAMIL -> "மண் மற்றும் பூச்சி கட்டுப்பாடு"
+                        Language.TELUGU -> "నేల మరియు పురుగుల నివారణ"
+                        Language.HINDI -> "मृदा व कीट संरक्षण"
+                        Language.ENGLISH -> "Soil & Pest Care"
+                    },
+                    subtitle = if (currentLanguage == Language.ENGLISH)
+                        "Soil testing analysis, biological pest control, and safe dosage advice."
                     else
-                        "Soil testing analysis, biological pest control, and safe dosage advice.",
+                        "मृदा स्वास्थ्य कार्ड परीक्षण, जैविक कीट निवारक और सुरक्षित कीटनाशक निर्देश।",
                     tag = "service_card_soil_pest",
                     onClick = { onNavigate(ScreenRoute.SOIL_PEST_CARE) }
                 )
@@ -181,11 +230,20 @@ fun HomeScreen(
                     icon = Icons.Default.AccountBalance,
                     iconBg = Color(0xFFEDE7F6),
                     iconTint = Color(0xFF512DA8),
-                    title = if (isHi) "सरकारी योजनाएं" else "Government Schemes",
-                    subtitle = if (isHi)
-                        "पीएम-किसान, फसल बीमा, केसीसी ऋण और सब्सिडी की पूरी जानकारी।"
+                    title = when (currentLanguage) {
+                        Language.PUNJABI -> "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ"
+                        Language.GUJARATI -> "સરકારી યોજનાઓ"
+                        Language.MARATHI -> "सरकारी योजना मार्गदर्शन"
+                        Language.BENGALI -> "সরকারি প্রকল্প সহায়তা"
+                        Language.TAMIL -> "அரசு திட்டங்கள்"
+                        Language.TELUGU -> "ప్రభుత్వ పథకాలు"
+                        Language.HINDI -> "सरकारी योजनाएं"
+                        Language.ENGLISH -> "Government Schemes"
+                    },
+                    subtitle = if (currentLanguage == Language.ENGLISH)
+                        "Complete guide to PM-KISAN, PMFBY insurance, KCC loan, and subsidies."
                     else
-                        "Complete guide to PM-KISAN, PMFBY insurance, KCC loan, and subsidies.",
+                        "पीएम-किसान, फसल बीमा, केसीसी ऋण और सब्सिडी की पूरी जानकारी।",
                     tag = "service_card_schemes",
                     onClick = { onNavigate(ScreenRoute.SCHEME_GUIDANCE) }
                 )
@@ -194,7 +252,7 @@ fun HomeScreen(
 
         // Field-Ready Checklist Panel
         item {
-            FieldReadyChecklistCard(isHi = isHi)
+            FieldReadyChecklistCard(currentLanguage = currentLanguage)
         }
 
         // Group 11 IDT Team Showcase
@@ -235,18 +293,35 @@ fun HomeScreen(
                     .testTag("request_consultation_cta_card")
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
+                    val consultationTitle = when (currentLanguage) {
+                        Language.HINDI -> "खेत की समस्या के लिए विशेषज्ञ से बात करें"
+                        Language.PUNJABI -> "ਖੇਤ ਦੀ ਸਮੱਸਿਆ ਲਈ ਮਾਹਰ ਨਾਲ ਗੱਲ ਕਰੋ"
+                        Language.GUJARATI -> "ખેતરની સમસ્યા માટે નિષ્ણાત સાથે વાત કરો"
+                        Language.MARATHI -> "शेतीच्या समस्येसाठी तज्ज्ञांशी बोला"
+                        Language.BENGALI -> "মাঠের সমস্যার জন্য বিশেষজ্ঞের সাথে কথা বলুন"
+                        Language.TAMIL -> "வயல் பிரச்சனைக்கு நிபுணரிடம் ஆலோசனை பெறுக"
+                        Language.TELUGU -> "పొలం సమస్య కోసం నిపుణులతో మాట్లాడండి"
+                        Language.ENGLISH -> "Have a question about your field?"
+                    }
+                    val consultationDesc = when (currentLanguage) {
+                        Language.HINDI -> "फसल की फोटो, लक्षण और खेत का विवरण भेजें। हमारे कृषि अधिकारी 24 घंटे में समाधान देंगे।"
+                        Language.PUNJABI -> "ਫ਼ਸਲ ਦੀ ਫੋਟੋ, ਲੱਛਣ ਅਤੇ ਵੇਰਵੇ ਭੇਜੋ। ਸਾਡੇ ਖੇਤੀਬਾੜੀ ਅਧਿਕਾਰੀ 24 ਘੰਟਿਆਂ ਵਿੱਚ ਹੱਲ ਦੇਣਗੇ।"
+                        Language.GUJARATI -> "પાકનો ફોટો, લક્ષણો અને વિગતો મોકલો. અમારા કૃષિ અધિકારીઓ 24 કલાકમાં ઉકેલ આપશે."
+                        Language.MARATHI -> "पिकाचा फोटो, लक्षणे व तपशील पाठवा. आमचे कृषी अधिकारी २४ तासांत मार्गदर्शन करतील."
+                        Language.BENGALI -> "ফসলের ছবি ও লক্ষণ পাঠান। আমাদের কৃষি বিশেষজ্ঞরা ২৪ ঘণ্টায় সমাধান দেবেন।"
+                        Language.TAMIL -> "பயிர் புகைப்படம் மற்றும் விவரங்களை அனுப்பவும். எங்கள் விவசாய நிபுணர்கள் 24 மணி நேரத்தில் வழிகாட்டுவர்."
+                        Language.TELUGU -> "పంట ఫోటో మరియు వివరాలు పంపండి. మా వ్యవసాయ నిపుణులు 24 గంటల్లో పరిష్కారం అందిస్తారు."
+                        Language.ENGLISH -> "Share your location, crop, sowing date, and issue details. Our agricultural experts will respond with actionable recommendations."
+                    }
                     Text(
-                        text = if (isHi) "खेत की समस्या के लिए विशेषज्ञ से बात करें" else "Have a question about your field?",
+                        text = consultationTitle,
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = if (isHi)
-                            "फसल की फोटो, लक्षण और खेत का विवरण भेजें। हमारे कृषि अधिकारी 24 घंटे में समाधान देंगे।"
-                        else
-                            "Share your location, crop, sowing date, and issue details. Our agricultural experts will respond with actionable recommendations.",
+                        text = consultationDesc,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f)
                     )
@@ -258,7 +333,7 @@ fun HomeScreen(
                         modifier = Modifier.testTag("book_consultation_button")
                     ) {
                         Text(
-                            text = if (isHi) "परामर्श का अनुरोध करें" else "Request Consultation",
+                            text = AgriLocale.getConsultationButtonText(currentLanguage),
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
@@ -285,10 +360,105 @@ fun HomeScreen(
 }
 
 @Composable
+fun QuickLanguageStrip(
+    currentLanguage: Language,
+    onLanguageSelected: (Language) -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("quick_language_strip")
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Language,
+                        contentDescription = "Language",
+                        tint = Green800,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "भाषा चुनें / Select Regional Language",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Green900
+                    )
+                }
+                Text(
+                    text = "${Language.entries.size} Languages",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Gray,
+                    fontSize = 11.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(Language.entries) { lang ->
+                    val isSelected = currentLanguage == lang
+                    Surface(
+                        onClick = { onLanguageSelected(lang) },
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (isSelected) Green800 else Green100.copy(alpha = 0.6f),
+                        border = if (isSelected) null else BorderStroke(1.dp, Green800.copy(alpha = 0.2f)),
+                        modifier = Modifier.testTag("quick_lang_chip_${lang.code}")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
+                            Text(
+                                text = lang.nativeName,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                color = if (isSelected) Color.White else Green900
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun HeroHeaderCard(
-    isHi: Boolean,
+    currentLanguage: Language,
     onAskAiClick: () -> Unit
 ) {
+    val titleText = when (currentLanguage) {
+        Language.HINDI, Language.MARATHI -> "किसान साथी"
+        Language.PUNJABI -> "ਕਿਸਾਨ ਸਾਥੀ"
+        Language.GUJARATI -> "કિસાન સાથી"
+        Language.BENGALI -> "কিষাণ সাথী"
+        Language.TAMIL -> "கிசான் சாதி"
+        Language.TELUGU -> "కిసాన్ సాథి"
+        Language.ENGLISH -> "Kisaan Sathi"
+    }
+    val subtitleText = AgriLocale.getTagline(currentLanguage)
+
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
@@ -319,13 +489,13 @@ fun HeroHeaderCard(
                 Spacer(modifier = Modifier.width(14.dp))
                 Column {
                     Text(
-                        text = if (isHi) "किसान साथी" else "Kisaan Sathi",
+                        text = titleText,
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.White,
                         fontWeight = FontWeight.ExtraBold
                     )
                     Text(
-                        text = if (isHi) "स्मार्ट खेती, खुशहाल किसान" else "Smart Farming Support & Advisory",
+                        text = subtitleText,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Gold100
                     )
@@ -335,10 +505,16 @@ fun HeroHeaderCard(
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = if (isHi)
-                    "फसल स्वास्थ्य, सटीक सिंचाई, मृदा जांच और सरकारी योजनाओं की विश्वसनीय जानकारी सीधे आपके हाथ में।"
-                else
-                    "Empowering farmers with smart crop advisory, precision irrigation, soil health diagnostics, and direct government scheme support.",
+                text = when (currentLanguage) {
+                    Language.PUNJABI -> "ਫ਼ਸਲ ਸਿਹਤ, ਸਹੀ ਸਿੰਚਾਈ, ਮਿੱਟੀ ਜਾਂਚ ਅਤੇ ਸਰਕਾਰੀ ਸਕੀਮਾਂ ਦੀ ਭਰੋਸੇਯੋਗ ਜਾਣਕਾਰੀ ਸਿੱਧਾ ਤੁਹਾਡੇ ਹੱਥ ਵਿੱਚ।"
+                    Language.GUJARATI -> "પાક સ્વાસ્થ્ય, સચોટ સિંચાઈ, માટી પરીક્ષણ અને સરકારી યોજનાઓની વિશ્વસનીય માહિતી સીધા તમારા હાથમાં."
+                    Language.MARATHI -> "पीक आरोग्य, अचूक सिंचन, माती परीक्षण आणि सरकारी योजनांची खात्रीशीर माहिती थेट तुमच्या हातात."
+                    Language.BENGALI -> "ফসল স্বাস্থ্য, সঠিক সেচ, মাটি পরীক্ষা এবং সরকারি প্রকল্পের নির্ভরযোগ্য তথ্য সরাসরি আপনার হাতে।"
+                    Language.TAMIL -> "பயிர் நலம், துல்லியமான பாசனம், மண் பரிசோதனை மற்றும் அரசு திட்டங்களின் தகவல்கள் உங்கள் கைகளில்."
+                    Language.TELUGU -> "పంట ఆరోగ్యం, ఖచ్చితమైన నీటిపారుదల, నేల పరీక్ష మరియు ప్రభుత్వ పథకాల నమ్మకమైన సమాచారం మీ చేతుల్లో."
+                    Language.HINDI -> "फसल स्वास्थ्य, सटीक सिंचाई, मृदा जांच और सरकारी योजनाओं की विश्वसनीय जानकारी सीधे आपके हाथ में।"
+                    Language.ENGLISH -> "Empowering farmers with smart crop advisory, precision irrigation, soil health diagnostics, and direct government scheme support."
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.95f),
                 lineHeight = 20.sp
@@ -360,7 +536,16 @@ fun HeroHeaderCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (isHi) "एआई कृषि सहायक से पूछें" else "Ask AI Agri Assistant",
+                    text = when (currentLanguage) {
+                        Language.PUNJABI -> "ਏਆਈ ਖੇਤੀ ਸਹਾਇਕ ਨੂੰ ਪੁੱਛੋ"
+                        Language.GUJARATI -> "AI કૃષિ સહાયકને પૂછો"
+                        Language.MARATHI -> "एआय कृषी सहाय्यकाला विचारा"
+                        Language.BENGALI -> "এআই কৃষি সহকারীকে জিজ্ঞাসা করুন"
+                        Language.TAMIL -> "AI விவசாய உதவியாளரிடம் கேளுங்கள்"
+                        Language.TELUGU -> "AI వ్యవసాయ సహాయకుడిని అడగండి"
+                        Language.HINDI -> "एआई कृषि सहायक से पूछें"
+                        Language.ENGLISH -> "Ask AI Agri Assistant"
+                    },
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
@@ -372,11 +557,66 @@ fun HeroHeaderCard(
 @Composable
 fun WeatherAdvisoryCard(
     weather: WeatherInfo?,
-    isHi: Boolean,
+    currentLanguage: Language,
     isLoading: Boolean,
     onLocationClick: () -> Unit,
     onRefresh: () -> Unit
 ) {
+    val isHi = currentLanguage == Language.HINDI
+    val updatedLabel = when (currentLanguage) {
+        Language.HINDI -> "अपडेट"
+        Language.PUNJABI -> "ਅੱਪਡੇਟ"
+        Language.BENGALI -> "আপডেট"
+        Language.GUJARATI -> "અપડેટ"
+        Language.MARATHI -> "अपडेट"
+        Language.TAMIL -> "புதுப்பிப்பு"
+        Language.TELUGU -> "నవీకరణ"
+        Language.ENGLISH -> "Updated"
+    }
+    val feelsLabel = when (currentLanguage) {
+        Language.HINDI -> "अनुभव"
+        Language.PUNJABI -> "ਮਹਿਸੂਸ"
+        Language.BENGALI -> "অনুভূত"
+        Language.GUJARATI -> "અનુભવ"
+        Language.MARATHI -> "जाणवते"
+        Language.TAMIL -> "உணரப்படுகிறது"
+        Language.TELUGU -> "అనిపిస్తుంది"
+        Language.ENGLISH -> "Feels"
+    }
+    val humidityLabel = AgriLocale.getHumidityLabel(currentLanguage)
+    val windLabel = AgriLocale.getWindLabel(currentLanguage)
+    val pressureLabel = AgriLocale.getPressureLabel(currentLanguage)
+    val sprayHeader = when (currentLanguage) {
+        Language.HINDI -> "दवा छिड़काव स्थिति"
+        Language.PUNJABI -> "ਸਪਰੇਅ ਸਥਿਤੀ"
+        Language.BENGALI -> "স্প্রে অবস্থা"
+        Language.GUJARATI -> "છંટકાવ સ્થિતિ"
+        Language.MARATHI -> "फवारणी स्थिती"
+        Language.TAMIL -> "தெளிப்பு நிலை"
+        Language.TELUGU -> "పిచికారీ స్థితి"
+        Language.ENGLISH -> "Field Spray Window"
+    }
+    val irrigationHeader = when (currentLanguage) {
+        Language.HINDI -> "सिंचाई योजना"
+        Language.PUNJABI -> "ਸਿੰਚਾਈ ਸਲਾਹ"
+        Language.BENGALI -> "সেচ পরামর্শ"
+        Language.GUJARATI -> "સિંચાઈ સલાહ"
+        Language.MARATHI -> "सिंचन सल्ला"
+        Language.TAMIL -> "பாசன ஆலோசனை"
+        Language.TELUGU -> "నీటిపారుదల సలహా"
+        Language.ENGLISH -> "Irrigation Advisory"
+    }
+    val fieldWorkHeader = when (currentLanguage) {
+        Language.HINDI -> "खेत कार्य सलाह"
+        Language.PUNJABI -> "ਖੇਤ ਕੰਮ ਸਲਾਹ"
+        Language.BENGALI -> "মাঠের কাজের পরামর্শ"
+        Language.GUJARATI -> "ખેતર કાર્ય સલાહ"
+        Language.MARATHI -> "शेती काम सल्ला"
+        Language.TAMIL -> "வயல் வேலை ஆலோசனை"
+        Language.TELUGU -> "పొలం పని సలహా"
+        Language.ENGLISH -> "Field Work Advisory"
+    }
+
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFE5F3FB)),
@@ -411,7 +651,7 @@ fun WeatherAdvisoryCard(
                 }
 
                 Text(
-                    text = "${if (isHi) "अपडेट" else "Updated"}: ${weather?.lastUpdated ?: "Live"}",
+                    text = "$updatedLabel: ${weather?.lastUpdated ?: "Live"}",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color(0xFF546E7A),
                     fontSize = 11.sp
@@ -489,7 +729,7 @@ fun WeatherAdvisoryCard(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${if (isHi) "अनुभव" else "Feels"}: ${weather?.feelsLikeC ?: 27}°C",
+                            text = "$feelsLabel: ${weather?.feelsLikeC ?: 27}°C",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFF2874A6),
                             modifier = Modifier.padding(bottom = 6.dp)
@@ -528,19 +768,19 @@ fun WeatherAdvisoryCard(
             ) {
                 StatPill(
                     icon = Icons.Default.WaterDrop,
-                    label = if (isHi) "नमी" else "Humidity",
+                    label = humidityLabel,
                     value = "${weather?.humidityPercent ?: 54}%",
                     modifier = Modifier.weight(1f)
                 )
                 StatPill(
                     icon = Icons.Default.Air,
-                    label = if (isHi) "हवा गति" else "Wind",
+                    label = windLabel,
                     value = "${weather?.windSpeedKmh ?: 11.2} km/h",
                     modifier = Modifier.weight(1f)
                 )
                 StatPill(
                     icon = Icons.Default.Speed,
-                    label = if (isHi) "दबाव" else "Pressure",
+                    label = pressureLabel,
                     value = "${weather?.pressureHpa ?: 1013} hPa",
                     modifier = Modifier.weight(1f)
                 )
@@ -578,7 +818,7 @@ fun WeatherAdvisoryCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "${if (isHi) "दवा छिड़काव स्थिति" else "Field Spray Window"}: ${if (isHi) spray.labelHi else spray.labelEn}",
+                            text = "$sprayHeader: ${AgriLocale.getSprayWindowLabel(spray, currentLanguage)}",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = sprayTextColor
@@ -603,7 +843,7 @@ fun WeatherAdvisoryCard(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "${if (isHi) "सिंचाई योजना" else "Irrigation Advisory"}: ${if (isHi) (weather?.irrigationAdvisoryHi ?: "") else (weather?.irrigationAdvisoryEn ?: "")}",
+                    text = "$irrigationHeader: ${if (isHi) (weather?.irrigationAdvisoryHi ?: "") else (weather?.irrigationAdvisoryEn ?: "")}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF154360),
                     lineHeight = 16.sp
@@ -619,7 +859,7 @@ fun WeatherAdvisoryCard(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "${if (isHi) "खेत कार्य सलाह" else "Field Work Advisory"}: ${if (isHi) (weather?.fieldWorkAdvisoryHi ?: "") else (weather?.fieldWorkAdvisoryEn ?: "")}",
+                    text = "$fieldWorkHeader: ${if (isHi) (weather?.fieldWorkAdvisoryHi ?: "") else (weather?.fieldWorkAdvisoryEn ?: "")}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF154360),
                     lineHeight = 16.sp
@@ -759,9 +999,21 @@ fun LocationPickerDialog(
 
 @Composable
 fun EmergencyHelplineCard(
-    isHi: Boolean,
+    currentLanguage: Language,
     onCallClick: () -> Unit
 ) {
+    val helplineTitle = AgriLocale.getHelplineTitle(currentLanguage)
+    val callButtonText = when (currentLanguage) {
+        Language.HINDI -> "कॉल करें"
+        Language.PUNJABI -> "ਕਾਲ ਕਰੋ"
+        Language.GUJARATI -> "કૉલ કરો"
+        Language.MARATHI -> "कॉल करा"
+        Language.BENGALI -> "কল করুন"
+        Language.TAMIL -> "அழைக்க"
+        Language.TELUGU -> "కాల్ చేయండి"
+        Language.ENGLISH -> "Call"
+    }
+
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
@@ -790,7 +1042,7 @@ fun EmergencyHelplineCard(
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = if (isHi) "किसान कॉल सेंटर (निःशुल्क)" else "Kisan Call Center (Toll Free)",
+                    text = helplineTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFB71C1C)
@@ -808,7 +1060,7 @@ fun EmergencyHelplineCard(
                 modifier = Modifier.testTag("call_kcc_button")
             ) {
                 Text(
-                    text = if (isHi) "कॉल करें" else "Call",
+                    text = callButtonText,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
@@ -875,7 +1127,18 @@ fun ServiceCard(
 }
 
 @Composable
-fun FieldReadyChecklistCard(isHi: Boolean) {
+fun FieldReadyChecklistCard(currentLanguage: Language) {
+    val title = when (currentLanguage) {
+        Language.HINDI -> "खेत के लिए सरल चेकलिस्ट"
+        Language.PUNJABI -> "ਖੇਤ ਲਈ ਸੌਖੀ ਚੈੱਕਲਿਸਟ"
+        Language.GUJARATI -> "ખેતર માટે સરળ ચેકલિસ્ટ"
+        Language.MARATHI -> "शेतासाठी सुलभ चेकलिस्ट"
+        Language.BENGALI -> "মাঠের জন্য সহজ চেকলিস্ট"
+        Language.TAMIL -> "விவசாய பண்ணை சரிபார்ப்பு பட்டியல்"
+        Language.TELUGU -> "పొలం కోసం సులభమైన చెక్‌లిస్ట్"
+        Language.ENGLISH -> "Field-Ready Checklist"
+    }
+
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Green100.copy(alpha = 0.5f)),
@@ -883,22 +1146,55 @@ fun FieldReadyChecklistCard(isHi: Boolean) {
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
             Text(
-                text = if (isHi) "खेत के लिए सरल चेकलिस्ट" else "Field-Ready Checklist",
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = Green900
             )
             Spacer(modifier = Modifier.height(10.dp))
 
-            val items = if (isHi) listOf(
-                "मिट्टी से शुरुआत करें: अंदाज के बजाय मिट्टी जांच (Soil Test) के आधार पर खाद चुनें।",
-                "समझदारी से पानी दें: फसल की अवस्था अनुसार सिंचाई करें, जलभराव से बचें।",
-                "नियमित निरीक्षण करें: पत्तियों पर धब्बे, कीट या पीलापन दिखने पर तुरंत जांच करें।"
-            ) else listOf(
-                "Start with the soil: Choose nutrients based on a soil test, not guesswork.",
-                "Plan water wisely: Match watering to crop needs to avoid water wastage or stress.",
-                "Check crops regularly: Spot unusual wilting, spots, or insects early before disease spreads."
-            )
+            val items = when (currentLanguage) {
+                Language.HINDI -> listOf(
+                    "मिट्टी से शुरुआत करें: अंदाज के बजाय मिट्टी जांच (Soil Test) के आधार पर खाद चुनें।",
+                    "समझदारी से पानी दें: फसल की अवस्था अनुसार सिंचाई करें, जलभराव से बचें।",
+                    "नियमित निरीक्षण करें: पत्तियों पर धब्बे, कीट या पीलापन दिखने पर तुरंत जांच करें।"
+                )
+                Language.PUNJABI -> listOf(
+                    "ਮਿੱਟੀ ਦੀ ਜਾਂਚ ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ: ਅੰਦਾਜ਼ੇ ਦੀ ਬਜਾਏ ਮਿੱਟੀ ਟੈਸਟ ਅਨੁਸਾਰ ਖਾਦ ਪਾਓ।",
+                    "ਸਮਝਦਾਰੀ ਨਾਲ ਪਾਣੀ ਦਿਓ: ਫ਼ਸਲ ਦੀ ਲੋੜ ਮੁਤਾਬਕ ਸਿੰਚਾਈ ਕਰੋ, ਪਾਣੀ ਖੜ੍ਹਾ ਨਾ ਹੋਣ ਦਿਓ।",
+                    "ਨਿਯਮਿਤ ਨਿਗਰਾਨੀ ਕਰੋ: ਪੱਤਿਆਂ 'ਤੇ ਧੱਬੇ ਜਾਂ ਕੀੜੇ ਦਿਖਣ 'ਤੇ ਤੁਰੰਤ ਜਾਂਚ ਕਰੋ।"
+                )
+                Language.GUJARATI -> listOf(
+                    "માટી પરીક્ષણથી શરૂઆત કરો: અંદાજ લગાવવાને બદલે જમીન ચકાસણી મુજબ ખાતર આપો.",
+                    "સમજદારીપૂર્વક પિયત આપો: પાકની જરૂરિયાત મુજબ સિંચાઈ કરો, પાણીનો ભરાવો અટકાવો.",
+                    "નિયમિત નિરીક્ષણ કરો: પાંદડા પર ડાઘ, જીવાત કે પીળાશ દેખાય તો તરત તપાસ કરો."
+                )
+                Language.MARATHI -> listOf(
+                    "माती परीक्षणाने सुरुवात करा: अंदाजाने नव्हे, तर सॉईल टेस्टनुसार खतांचा वापर करा.",
+                    "योग्य पाणी व्यवस्थापन: पिकाच्या वाढीच्या टप्प्यानुसार पाणी द्या, पाणी साचू देऊ नका.",
+                    "नियमित शेती पाहणी: पानांवर ठिपके, कीड किंवा पिवळेपणा दिसल्यास लगेच उपाय करा."
+                )
+                Language.BENGALI -> listOf(
+                    "মাটি পরীক্ষা দিয়ে শুরু করুন: অনুমানের পরিবর্তে মৃত্তিকা পরীক্ষার ভিত্তিতে সার দিন।",
+                    "বুঝে-শুনে জল দিন: ফসলের বৃদ্ধির পর্যায় অনুযায়ী সেচ দিন, জল জমতে দেবেন না।",
+                    "নিয়মিত পর্যবেক্ষণ করুন: পাতায় দাগ, পোকা বা হলুদ ভাব দেখা দিলে দ্রুত ব্যবস্থা নিন।"
+                )
+                Language.TAMIL -> listOf(
+                    "மண் பரிசோதனையுடன் தொடங்குங்கள்: உரங்களை மண் பரிசோதனை பரிந்துரைப்படி இடுங்கள்.",
+                    "சரியான பாசனம்: பயிர் தேவைக்கு ஏற்ப தண்ணீர் பாய்ச்சுங்கள், தேங்க விடாதீர்கள்.",
+                    "தொடர் கண்காணிப்பு: இலைகளில் புள்ளிகள், பூச்சிகள் தென்பட்டால் உடனே கவனியுங்கள்."
+                )
+                Language.TELUGU -> listOf(
+                    "నేల పరీక్షతో ప్రారంభించండి: అంచనాలతో కాకుండా నేల పరీక్ష ఆధారంగా ఎరువులు వాడండి.",
+                    "సమర్థవంతమైన నీటిపారుదల: పంట అవసరానికి తగినట్లుగా నీరు అందించండి.",
+                    "నిరంతర పరిశీలన: ఆకులపై మచ్చలు లేదా పురుగులు కనిపిస్తే వెంటనే చర్యలు తీసుకోండి."
+                )
+                Language.ENGLISH -> listOf(
+                    "Start with the soil: Choose nutrients based on a soil test, not guesswork.",
+                    "Plan water wisely: Match watering to crop needs to avoid water wastage or stress.",
+                    "Check crops regularly: Spot unusual wilting, spots, or insects early before disease spreads."
+                )
+            }
 
             items.forEach { tip ->
                 Row(

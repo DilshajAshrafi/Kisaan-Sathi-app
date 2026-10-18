@@ -68,9 +68,17 @@ fun KisaanBottomBar(
                     )
                 },
                 label = {
+                    val labelText = when (item) {
+                        BottomNavItem.Home -> com.example.kisaansathi.data.AgriLocale.getNavHome(currentLanguage)
+                        BottomNavItem.Crops -> com.example.kisaansathi.data.AgriLocale.getNavCrops(currentLanguage)
+                        BottomNavItem.Irrigation -> com.example.kisaansathi.data.AgriLocale.getNavIrrigation(currentLanguage)
+                        BottomNavItem.SoilPest -> com.example.kisaansathi.data.AgriLocale.getNavSoilPest(currentLanguage)
+                        BottomNavItem.Schemes -> com.example.kisaansathi.data.AgriLocale.getNavSchemes(currentLanguage)
+                        BottomNavItem.Assistant -> com.example.kisaansathi.data.AgriLocale.getNavAssistant(currentLanguage)
+                    }
                     Text(
-                        text = if (currentLanguage == Language.HINDI) item.titleHi else item.titleEn,
-                        style = MaterialTheme.typography.labelMedium
+                        text = labelText,
+                        style = MaterialTheme.typography.labelSmall
                     )
                 },
                 modifier = Modifier.testTag(item.tag),

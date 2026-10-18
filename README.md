@@ -6,6 +6,18 @@ This application has been rewritten from the original web application into a com
 
 ---
 
+## 📱 Download & Install APK
+
+You can download and install the pre-built APK directly onto any Android phone (Android 7.0 / API 24 or newer):
+
+- **📥 Download APK**: [`kisaan-sathi.apk`](./kisaan-sathi.apk) (18 MB)
+- **Install Instructions**:
+  1. Download `kisaan-sathi.apk` to your phone.
+  2. Tap the downloaded file and select **Install** (allow "Install from Unknown Sources" if prompted).
+  3. Open **Kisaan Sathi** and select your language.
+
+---
+
 ## 🌟 Core Features
 
 1. **🌾 Crop Consultation & Agronomic Planning**

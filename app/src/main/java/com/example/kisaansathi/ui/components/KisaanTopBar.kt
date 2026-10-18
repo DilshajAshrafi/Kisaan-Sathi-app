@@ -1,6 +1,7 @@
 package com.example.kisaansathi.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -95,15 +96,29 @@ fun KisaanTopBar(
             }
         },
         actions = {
-            // Language selector button
-            IconButton(
-                onClick = onLanguageClick,
-                modifier = Modifier.testTag("top_bar_language_button")
+            // Language selector button with current language label
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(Color.White.copy(alpha = 0.22f))
+                    .clickable { onLanguageClick() }
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                    .testTag("top_bar_language_button"),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Language,
                     contentDescription = "Select Language",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = currentLanguage.nativeName,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 11.sp
                 )
             }
 

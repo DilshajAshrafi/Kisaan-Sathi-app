@@ -86,7 +86,8 @@ class MainActivity : ComponentActivity() {
                                 onLocationSelected = { viewModel.fetchWeather(it) },
                                 onRefreshWeather = { viewModel.refreshWeather() },
                                 onNavigate = { route -> viewModel.navigateTo(route) },
-                                onEmergencyCall = { dialKisanCallCenter() }
+                                onEmergencyCall = { dialKisanCallCenter() },
+                                onLanguageChange = { viewModel.setLanguage(it) }
                             )
                             ScreenRoute.CROP_CONSULTATION -> CropConsultationScreen(
                                 currentLanguage = uiState.selectedLanguage,

@@ -17,6 +17,7 @@ local.properties
 .env
 .build-outputs
 *.apk
+!kisaan-sathi.apk
 *.aab
 debug.keystore
 debug.keystore.base64
