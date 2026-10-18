@@ -86,7 +86,7 @@ fun CropConsultationScreen(
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Green100),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -113,7 +113,7 @@ fun CropConsultationScreen(
                             text = if (isHi) "फसल परामर्श एवं योजना" else "Crop Consultation & Planning",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Green900
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -177,7 +177,7 @@ fun CropConsultationScreen(
                         text = if (isHi) "विशेषज्ञ से अपनी फसल पर व्यक्तिगत सलाह लें" else "Need personalized advice for your field?",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Green900
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -227,18 +227,18 @@ fun CropGuideCard(crop: CropGuide, isHi: Boolean) {
                     text = if (isHi) crop.nameHi else crop.nameEn,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Green900
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Green100)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = if (isHi) crop.seasonHi else crop.seasonEn,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Green800,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Bold
                     )
                 }

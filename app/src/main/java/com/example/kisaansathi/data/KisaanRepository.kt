@@ -1,5 +1,6 @@
 package com.example.kisaansathi.data
 
+import com.example.R
 import com.example.kisaansathi.model.AgriExpert
 import com.example.kisaansathi.model.CropGuide
 import com.example.kisaansathi.model.IrrigationAdvice
@@ -265,7 +266,7 @@ object KisaanRepository {
             designation = "Project Coordinator",
             specialization = "Project Supervision & Agronomy Coordination",
             experience = "Senior Project Coordinator",
-            imageRes = null
+            imageRes = R.drawable.dr_pushpendra_tyagi
         ),
         AgriExpert(
             id = "kaushal",
@@ -273,7 +274,7 @@ object KisaanRepository {
             designation = "Team Lead",
             specialization = "Project Leadership & System Architecture",
             experience = "Team Lead",
-            imageRes = null
+            imageRes = R.drawable.kaushal_dubey
         ),
         AgriExpert(
             id = "dilshaj",
@@ -281,7 +282,7 @@ object KisaanRepository {
             designation = "Full Stack AI Engineer",
             specialization = "AI Systems, Full Stack Architecture & Model Engineering",
             experience = "Full Stack AI Engineer",
-            imageRes = null
+            imageRes = R.drawable.dilshaj_ashrafi
         ),
         AgriExpert(
             id = "gaurav",
@@ -289,7 +290,7 @@ object KisaanRepository {
             designation = "Agricultural Researcher",
             specialization = "Agricultural Research & Field Practices",
             experience = "Agricultural Researcher",
-            imageRes = null
+            imageRes = R.drawable.gaurrav_raj
         ),
         AgriExpert(
             id = "abhishek",
@@ -297,7 +298,7 @@ object KisaanRepository {
             designation = "Presentation & Documentation Writer",
             specialization = "Technical Documentation & Project Presentation",
             experience = "Documentation Specialist",
-            imageRes = null
+            imageRes = R.drawable.abhishek_kumar_singh
         )
     )
 
@@ -438,10 +439,10 @@ object KisaanRepository {
                 Language.TELUGU -> "రైతుల కోసం స్మార్ట్ వ్యవసాయ సలహా"
                 else -> "Smart Farming Advisory & Support"
             }
-            "emergency_helpline" -> when (language) {
-                Language.HINDI -> "किसान कॉल सेंटर (निःशुल्क): 1800-180-1551"
-                Language.PUNJABI -> "ਕਿਸਾਨ ਕਾਲ ਸੈਂਟਰ (ਟੋਲ ਫ੍ਰੀ): 1800-180-1551"
-                else -> "Kisan Call Center (Toll Free): 1800-180-1551"
+            "team_contact" -> when (language) {
+                Language.HINDI -> "ग्रुप 11 IDT सहायता: +91 8081392456"
+                Language.PUNJABI -> "ਗਰੁੱਪ 11 IDT ਸਹਾਇਤਾ: +91 8081392456"
+                else -> "Group 11 IDT Support: +91 8081392456"
             }
             else -> key
         }

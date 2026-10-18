@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <title>Kisaan Sathi | Irrigation Support</title>
+    <script>
+      if (localStorage.getItem('kisaanSathiTheme') === 'dark') {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    </script>
+    <style>
+      :root {
+        --green-900: #0b3b2a;
+        --green-800: #124d39;
+        --green-600: #2d8b5f;
+        --green-100: #ebf7ef;
+        --text: #1d2a22;
+        --muted: #5d6d64;
+        --white: #ffffff;
+        --shadow: 0 18px 45px rgba(11, 59, 42, 0.12);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 40px 16px;
+        display: grid;
+        place-items: center;
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #f6faf7, #edf7f1);
+        line-height: 1.6;
+      }
+      .page-card {
+        width: min(760px, 100%);
+        padding: clamp(28px, 6vw, 52px);
+        border: 1px solid rgba(18, 77, 57, 0.08);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: var(--shadow);
+      }
+      .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+      .icon {
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        background: var(--green-100);
+        font-size: 2rem;
+      }
+      .language-toggle {
+        padding: 10px 16px;
+        border: 1px solid rgba(18, 77, 57, 0.16);
+        border-radius: 999px;
+        background: var(--green-100);
+        color: var(--green-900);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      h1, h2 { color: var(--green-900); line-height: 1.2; }
+      h1 { margin: 0 0 14px; font-size: clamp(2rem, 5vw, 3rem); }
+      h2 { margin: 30px 0 12px; font-size: 1.3rem; }
+      p, li { color: var(--muted); }
+      ul { padding-left: 24px; }
+      .intro-lead { font-size: 1.12rem; font-weight: 700; color: var(--green-800); }
+      .irrigation-video { width: 100%; min-height: 260px; margin: 26px 0; display: grid; place-items: center; border: 2px dashed rgba(45, 139, 95, 0.35); border-radius: 20px; background: linear-gradient(135deg, #e7f5eb, #f7fbf8); color: var(--green-800); text-align: center; font-weight: 700; }
+      .service-list { list-style: none; padding: 0; }
+      .service-list li { margin: 14px 0; padding: 16px 18px; border-radius: 16px; background: var(--green-100); }
+      .service-list strong { display: block; margin-bottom: 4px; color: var(--green-900); }
+      .support-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+      .support-button { display: inline-flex; padding: 13px 20px; border-radius: 999px; background: linear-gradient(135deg, var(--green-600), var(--green-800)); color: var(--white); font-weight: 700; text-decoration: none; }
+      .support-button.secondary { background: var(--green-100); color: var(--green-900); }
+      .contact-details { margin-top: 20px; padding: 18px; border-left: 4px solid var(--green-600); background: #f5faf6; }
+      .contact-details a,
+      :root[data-theme="dark"] .page-card .contact-details a { color: #1b5941 !important; }
+      :root[data-theme="dark"] .page-card .contact-details { background: #20392d; }
+      li + li { margin-top: 8px; }
+      .back-link {
+        display: inline-flex;
+        margin-top: 24px;
+        padding: 13px 21px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--green-600), var(--green-800));
+        color: var(--white);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+      }
+    </style>
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="agri-assistant.css" />
+    <link rel="stylesheet" href="page-redesign.css" />
+  </head>
+  <body class="support-page-redesign">
+    <div class="page-loader" aria-hidden="true"><span class="page-loader-mark">🌾</span></div>
+    <main class="page-card">
+      <div class="toolbar">
+        <div class="icon" aria-hidden="true">💧</div>
+        <details class="settings-menu">
+          <summary aria-label="Language and appearance settings">
+            <span aria-hidden="true">⚙</span>
+            <span class="settings-menu-label">Settings</span>
+            <span class="settings-menu-chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="settings-menu-panel">
+            <button class="language-toggle" id="language-toggle" type="button" aria-label="Switch to Hindi">हिंदी</button>
+            <button class="theme-toggle" type="button">Dark Mode</button>
+          </div>
+        </details>
+      </div>
+      <h1 data-en="Kisaan Sathi - Irrigation Support">Kisaan Sathi - Irrigation Support</h1>
+      <p class="intro-lead" data-en="Maximizing Every Drop for a Bountiful Harvest">Maximizing Every Drop for a Bountiful Harvest</p>
+      <p>Welcome to the Kisaan Sathi Irrigation Support Center. We understand that timely and efficient watering is the foundation of a successful crop. Our goal is to equip you with the right irrigation techniques to conserve water, maintain optimal soil health, and help your fields thrive.</p>
+      <video class="irrigation-video" controls preload="metadata" aria-label="Ground, soil, and drip irrigation video"><source src="irrigation-video.mp4" type="video/mp4" />Your browser does not support embedded video. <a href="irrigation-video.mp4" download>Download the irrigation video</a>.</video>
+      <h2>Our Irrigation Support Services</h2>
+      <ul class="service-list">
+        <li><strong>Modern Irrigation Setup</strong>Step-by-step guidance on installing highly efficient drip and sprinkler systems. Deliver water directly to the roots, save resources, and significantly reduce weed growth.</li>
+        <li><strong>Soil &amp; Moisture Management</strong>Smart irrigation strategies tailored to your specific soil type (clay, sandy, or loam) to prevent waterlogging, maintain moisture, and keep your land fertile.</li>
+        <li><strong>Maintenance &amp; Troubleshooting</strong>Quick and practical solutions for everyday farming challenges—whether it is a leaking pipe, sudden pressure drop, blocked nozzles, or pump and motor malfunctions.</li>
+        <li><strong>Crop-Specific Watering Schedules</strong>Every crop has different water requirements. We help you design customized irrigation schedules based on the specific crop type and its current growth stage.</li>
+      </ul>
+      <h2>Why Choose Kisaan Sathi?</h2>
+      <p>We do more than just give advice; we understand the reality of your fields. Our mission is to be your true farming companion—helping you lower your input costs, save water, and maximize your overall farming income.</p>
+      <h2>Facing an irrigation issue? We are here to help:</h2>
+      <div class="support-actions">
+        <a class="support-button" href="index.html#contact">Report an Issue / Help Center</a>
+        <a class="support-button secondary" href="tel:+918081392456">Talk to Our Experts</a>
+      </div>
+      <div class="contact-details">
+        <p><strong>Call Us:</strong> <a href="tel:+918081392456">+91 80813 92456</a></p>
+        <p><strong>WhatsApp:</strong> <a href="https://wa.me/918081392456">+91 80813 92456</a></p>
+      </div>      <section class="field-guide-panel">
+        <div class="section-head">
+          <h2 data-en="A simple field-ready checklist" data-hi="खेत के लिए एक सरल चेकलिस्ट">A simple field-ready checklist</h2>
+          <p data-en="A few regular checks can help you spot problems early and make more informed farm decisions." data-hi="कुछ नियमित जांच से समस्याओं को जल्दी पहचानने और खेती के बेहतर फैसले लेने में मदद मिल सकती है।">A few regular checks can help you spot problems early and make more informed farm decisions.</p>
+        </div>
+        <div class="field-guide-grid">
+          <article class="field-guide-card">
+            <div class="field-guide-icon" aria-hidden="true">🪴</div>
+            <h3 data-en="Start with the soil" data-hi="मिट्टी से शुरुआत करें">Start with the soil</h3>
+            <p data-en="Check soil condition and choose nutrients based on a soil test, not guesswork." data-hi="मिट्टी की जांच करें और अंदाज के बजाय मिट्टी परीक्षण के आधार पर पोषक तत्व चुनें।">Check soil condition and choose nutrients based on a soil test, not guesswork.</p>
+          </article>
+          <article class="field-guide-card">
+            <div class="field-guide-icon" aria-hidden="true">💧</div>
+            <h3 data-en="Plan water wisely" data-hi="समझदारी से पानी की योजना बनाएं">Plan water wisely</h3>
+            <p data-en="Match watering to crop needs and local conditions to avoid waste or stress." data-hi="पानी की बर्बादी या फसल पर तनाव से बचने के लिए सिंचाई को फसल की जरूरत और स्थानीय परिस्थितियों के अनुसार रखें।">Match watering to crop needs and local conditions to avoid waste or stress.</p>
+          </article>
+          <article class="field-guide-card">
+            <div class="field-guide-icon" aria-hidden="true">🔎</div>
+            <h3 data-en="Check crops regularly" data-hi="फसलों की नियमित जांच करें">Check crops regularly</h3>
+            <p data-en="Look for unusual spots, insects, or wilting early; ask an expert before treatment." data-hi="असामान्य धब्बों, कीटों या मुरझाने के लक्षणों को जल्दी पहचानें; उपचार से पहले विशेषज्ञ से सलाह लें।">Look for unusual spots, insects, or wilting early; ask an expert before treatment.</p>
+          </article>
+        </div>
+        <a class="field-guide-link" href="index.html#contact"><span data-en="Have a question about your field? Talk to an expert" data-hi="अपने खेत के बारे में सवाल है? विशेषज्ञ से बात करें">Have a question about your field? Talk to an expert</span> <span aria-hidden="true">→</span></a>
+      </section>
+      <a class="back-link" href="index.html#services" data-en="Back to Home" data-hi="मुखपृष्ठ पर वापस जाएं">Back to Home</a>
+    </main>
+    <script>
+      const languageToggle = document.getElementById('language-toggle');
+      const backLink = document.querySelector('.back-link');
+      const fieldGuideLink = document.querySelector('.field-guide-link');
+      let isHindi = new URLSearchParams(window.location.search).get('lang') === 'hi';
+      function setLanguage(useHindi) {
+        isHindi = useHindi;
+        document.querySelectorAll('[data-en][data-hi]').forEach((element) => {
+          element.textContent = isHindi ? element.dataset.hi : element.dataset.en;
+        });
+        document.documentElement.lang = isHindi ? 'hi' : 'en';
+        document.title = isHindi ? 'किसान साथी | सिंचाई सहायता' : 'Kisaan Sathi | Irrigation Support';
+        languageToggle.textContent = isHindi ? 'English' : 'हिंदी';
+        languageToggle.setAttribute('aria-label', isHindi ? 'Switch to English' : 'Switch to Hindi');
+        if (window.kisaanSathiRefreshThemeLabel) {
+          window.kisaanSathiRefreshThemeLabel();
+        }
+        backLink.href = isHindi ? 'index.html?lang=hi#services' : 'index.html#services';
+        fieldGuideLink.href = isHindi ? 'index.html?lang=hi#contact' : 'index.html#contact';
+      }
+      languageToggle.addEventListener('click', () => {
+        window.kisaanSathiLanguageTransition(languageToggle, () => setLanguage(!isHindi));
+      });
+      setLanguage(isHindi);
+    </script>
+    <script src="theme.js"></script>
+    <script src="language-manager.js"></script>
+    <script src="agri-assistant.js"></script>
+  </body>
+</html>

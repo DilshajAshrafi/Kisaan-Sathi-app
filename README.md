@@ -10,9 +10,9 @@ This application has been rewritten from the original web application into a com
 
 You can download and install the pre-built APK directly onto any Android phone (Android 7.0 / API 24 or newer):
 
-- **📥 Download APK**: [`kisaan-sathi.apk`](./kisaan-sathi.apk) (18 MB)
+- **📥 Download APK**: [`Kisaan-Sathi.apk`](./Kisaan-Sathi.apk) (18 MB)
 - **Install Instructions**:
-  1. Download `kisaan-sathi.apk` to your phone.
+  1. Download `Kisaan-Sathi.apk` to your phone.
   2. Tap the downloaded file and select **Install** (allow "Install from Unknown Sources" if prompted).
   3. Open **Kisaan Sathi** and select your language.
 
@@ -52,14 +52,17 @@ You can download and install the pre-built APK directly onto any Android phone (
 
 6. **📋 Expert Consultation Booking & Ticket Management**
    - Request consultation directly with Project Coordinator Dr. Pushpendra Tyagi and the Group 11 IDT team.
+   - View member photos and contact Group 11 IDT at **+91 8081392456** or **group11idt@outlook.com**.
    - Generates unique ticket tracking numbers (e.g. `KS-XXXXXX`) with status updates.
 
-7. **🚨 Emergency Kisan Call Center Support**
-   - One-tap direct dialer for the Government of India's toll-free Kisan Call Center: **1800-180-1551** (6:00 AM – 10:00 PM).
+7. **📞 Group 11 IDT Support**
+   - One-tap direct dialer for Group 11 IDT at **+91 8081392456** and email support at **group11idt@outlook.com**.
+   - Consultation requests are emailed to the team through FormSubmit, the same service as the website form (name, email, phone, financial aid, address, issue, optional photo/video up to 4 MB). The recipient must complete FormSubmit's first-time email verification before requests can be delivered.
+   - Website: [kissansathiindia.vercel.app](https://kissansathiindia.vercel.app/), also reachable from the app's Home screen.
 
 8. **🌐 Multi-lingual Support & Theming**
    - Supports 8 major Indian languages: English, Hindi (हिंदी), Punjabi (ਪੰਜਾਬੀ), Bengali (বাংলা), Gujarati (ગુજરાતી), Marathi (मराठी), Tamil (தமிழ்), Telugu (తెలుగు).
-   - Full dark and light mode theming adhering to Material Design 3.
+   - Dark mode preference is remembered between app launches, with Material Design 3 adaptive colors.
 
 ---
 
@@ -71,4 +74,4 @@ You can download and install the pre-built APK directly onto any Android phone (
 - **Architecture**: MVVM (Model-View-ViewModel) + Clean Architecture
 - **State Management**: Kotlin Coroutines & `MutableStateFlow` / `StateFlow`
 - **Gradle**: Kotlin DSL (`build.gradle.kts`) with Version Catalog (`gradle/libs.versions.toml`)
-- **Assets**: Adaptive vector launcher icon with golden wheat & leaf sprout motif.
+- **Assets**: Single-image adaptive launcher icon using the supplied Kisaan Sathi icon artwork.

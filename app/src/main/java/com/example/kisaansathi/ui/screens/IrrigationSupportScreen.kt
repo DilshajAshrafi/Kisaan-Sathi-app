@@ -93,7 +93,7 @@ fun IrrigationSupportScreen(
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Blue100),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -120,7 +120,7 @@ fun IrrigationSupportScreen(
                             text = if (isHi) "स्मार्ट सिंचाई योजना" else "Smart Irrigation Planner",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0D47A1)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -129,7 +129,7 @@ fun IrrigationSupportScreen(
                             else
                                 "Per Drop More Crop: Precision scheduling, water budget, and drip efficiency.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF1565C0)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -141,8 +141,7 @@ fun IrrigationSupportScreen(
             item {
                 Card(
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F9FF)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBAE6FD)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier.fillMaxWidth().testTag("weather_irrigation_planning_card")
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -163,14 +162,14 @@ fun IrrigationSupportScreen(
                                     text = weatherInfo.sourceLabel,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0369A1)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Text(
                                 text = weatherInfo.locationName,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0C4A6E)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -186,26 +185,26 @@ fun IrrigationSupportScreen(
                                     text = "${weatherInfo.temperatureC}°C • ${weatherInfo.conditionTitle}",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0369A1)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "${if (isHi) "हवा" else "Wind"}: ${weatherInfo.windSpeedKmh} km/h | ${if (isHi) "नमी" else "Humidity"}: ${weatherInfo.humidityPercent}%",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF475569)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             if (weatherInfo.isRainExpected) {
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0xFFFEF3C7))
+                                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                                         .padding(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
                                     Text(
                                         text = if (isHi) "🌧️ वर्षा संभावित" else "🌧️ Rain Expected",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFB45309)
+                                        color = MaterialTheme.colorScheme.onTertiaryContainer
                                     )
                                 }
                             }
@@ -217,7 +216,7 @@ fun IrrigationSupportScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White)
+                                .background(MaterialTheme.colorScheme.surface)
                                 .padding(12.dp)
                         ) {
                             Row(verticalAlignment = Alignment.Top) {
@@ -226,7 +225,7 @@ fun IrrigationSupportScreen(
                                     text = if (isHi) weatherInfo.irrigationAdvisoryHi else weatherInfo.irrigationAdvisoryEn,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF0F172A),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     lineHeight = 16.sp
                                 )
                             }
@@ -259,7 +258,7 @@ fun IrrigationSupportScreen(
                             text = if (isHi) "खेत जल आवश्यकता कैलकुलेटर" else "Farm Water Requirement Calculator",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Green900
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -367,7 +366,7 @@ fun IrrigationSupportScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(Green100)
+                                .background(MaterialTheme.colorScheme.primaryContainer)
                                 .padding(16.dp)
                         ) {
                             Column {
@@ -375,14 +374,14 @@ fun IrrigationSupportScreen(
                                     text = if (isHi) "सिंचाई परिणाम एवं सिफ़ारिश" else "Recommended Irrigation Plan",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Green900
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "${if (isHi) "दैनिक जल आवश्यकता" else "Daily Water Requirement"}: ${advice.dailyRequirementLiters} Liters",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF0D47A1)
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                                 Text(
                                     text = "${if (isHi) "सिंचाई अंतराल" else "Frequency"}: ${advice.weeklyFrequency}",
@@ -422,7 +421,7 @@ fun IrrigationSupportScreen(
                 text = if (isHi) "सिंचाई पद्धतियों की तुलना" else "Irrigation Systems Comparison",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -467,7 +466,7 @@ fun IrrigationSupportScreen(
         item {
             Card(
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Gold100.copy(alpha = 0.6f)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -488,7 +487,7 @@ fun IrrigationSupportScreen(
                             text = if (isHi) "खेत में नमी जांचने की आसान देसी विधि" else "Hand-Feel Soil Moisture Test",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Green900
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -534,7 +533,7 @@ fun ComparisonCard(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Green900
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Box(
                     modifier = Modifier

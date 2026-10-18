@@ -19,8 +19,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import com.example.kisaansathi.model.Language
 import com.example.kisaansathi.model.ScreenRoute
-import com.example.kisaansathi.ui.theme.Gold500
-import com.example.kisaansathi.ui.theme.Green800
 
 sealed class BottomNavItem(
     val route: ScreenRoute,
@@ -83,9 +81,9 @@ fun KisaanBottomBar(
                 },
                 modifier = Modifier.testTag(item.tag),
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Green800,
-                    selectedTextColor = Green800,
-                    indicatorColor = Gold500.copy(alpha = 0.25f),
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )

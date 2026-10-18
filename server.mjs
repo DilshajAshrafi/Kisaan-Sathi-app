@@ -333,7 +333,7 @@ const htmlContent = `<!DOCTYPE html>
       <div class="top-actions">
         <button class="icon-btn" id="lang-btn" title="Toggle English/Hindi">अ/A</button>
         <button class="icon-btn" id="theme-btn" title="Toggle Theme">🌙</button>
-        <button class="icon-btn call-btn" id="emergency-call-btn" title="Call Kisan Call Center">📞</button>
+        <button class="icon-btn call-btn" id="emergency-call-btn" title="Call Group 11 IDT support">📞</button>
       </div>
     </header>
 
@@ -421,10 +421,10 @@ const htmlContent = `<!DOCTYPE html>
 
         <div class="helpline-card">
           <div class="helpline-info">
-            <h4>Kisan Call Center: 1800-180-1551</h4>
-            <p>Toll Free • 6:00 AM – 10:00 PM • Native language support</p>
+            <h4>Group 11 IDT Support: +91 8081392456</h4>
+            <p>Call or email group11idt@outlook.com for assistance</p>
           </div>
-          <button class="btn btn-primary" onclick="alert('Dialing Kisan Call Center: 1800-180-1551')">Call</button>
+          <button class="btn btn-primary" onclick="alert('Contact Group 11 IDT: +91 8081392456')">Call</button>
         </div>
 
         <h3 class="section-title">Core Farming Services</h3>
@@ -771,7 +771,7 @@ const htmlContent = `<!DOCTYPE html>
     });
 
     document.getElementById('emergency-call-btn').addEventListener('click', () => {
-      alert('Kisan Call Center (Toll Free): 1800-180-1551\\nAvailable 6:00 AM - 10:00 PM in all Indian languages.');
+      alert('Group 11 IDT Support: +91 8081392456\\nEmail: group11idt@outlook.com');
     });
 
     function computeIrrigation() {
@@ -834,9 +834,9 @@ const htmlContent = `<!DOCTYPE html>
           body: JSON.stringify({ message: text, language: isHindi ? 'hi' : 'en' })
         });
         const data = await res.json();
-        botBubble.textContent = data.reply || "For this issue, consult your local Krishi Vigyan Kendra (KVK) or Kisan Call Center at 1800-180-1551.";
+        botBubble.textContent = data.reply || "For this issue, consult your local Krishi Vigyan Kendra (KVK) or contact Group 11 IDT at +91 8081392456.";
       } catch (e) {
-        botBubble.textContent = "Kisan Call Center: 1800-180-1551. For personalized advice, consult Dr. Pushpendra Tyagi and agronomist panel.";
+        botBubble.textContent = "Contact Group 11 IDT at +91 8081392456 or group11idt@outlook.com for personalized advice.";
       }
       msgs.scrollTop = msgs.scrollHeight;
     }
@@ -929,8 +929,8 @@ const server = createServer(async (req, res) => {
           reply = "For wheat, the Crown Root Initiation (CRI) stage at 20-25 days after sowing is critical for first watering. Adopting drip or sprinkler systems saves 40-50% water and qualifies for up to 55% subsidy under PMKSY.";
         } else if (q.includes('rust') || q.includes('pest') || q.includes('कीट') || q.includes('रोग')) {
           reply = "For early pests, apply 5% Neem Seed Kernel Extract (NSKE) or 5L fermented sour buttermilk in 100L water. For severe Yellow Rust or Blast disease, promptly contact your local Krishi Vigyan Kendra (KVK).";
-        } else if (q.includes('helpline') || q.includes('call') || q.includes('phone') || q.includes('नंबर')) {
-          reply = "You can call the Government of India Kisan Call Center Toll-Free: 1800-180-1551 (6:00 AM to 10:00 PM, 7 days a week) in your native language.";
+        } else if (q.includes('helpline') || q.includes('call') || q.includes('phone') || q.includes('contact') || q.includes('नंबर')) {
+          reply = "Contact Group 11 IDT at +91 8081392456 or email group11idt@outlook.com. You can also send a consultation request from the app.";
         } else {
           reply = "Thank you for asking! For optimal guidance on " + (parsed.message || 'your crop') + ", provide your soil type and sowing date, or submit a request directly to our agronomist panel in the consultation tab.";
         }
@@ -939,7 +939,7 @@ const server = createServer(async (req, res) => {
         res.end(JSON.stringify({ reply }));
       } catch (err) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ reply: "Kisan Call Center: 1800-180-1551." }));
+        res.end(JSON.stringify({ reply: "Contact Group 11 IDT at +91 8081392456 or group11idt@outlook.com." }));
       }
     });
     return;
@@ -1021,4 +1021,3 @@ const server = createServer(async (req, res) => {
 server.listen(port, '0.0.0.0', () => {
   console.log('Kisaan Sathi is running on http://0.0.0.0:' + port);
 });
-

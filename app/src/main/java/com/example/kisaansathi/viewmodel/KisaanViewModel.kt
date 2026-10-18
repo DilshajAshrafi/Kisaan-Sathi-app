@@ -2,6 +2,9 @@ package com.example.kisaansathi.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.kisaansathi.data.ConsultationAttachment
+import com.example.kisaansathi.data.ConsultationSubmission
+import com.example.kisaansathi.data.FormSubmitService
 import com.example.kisaansathi.data.KisaanRepository
 import com.example.kisaansathi.data.WeatherService
 import com.example.kisaansathi.model.ChatMessage
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -37,6 +41,8 @@ data class UiState(
     val chatMessages: List<ChatMessage> = emptyList(),
     val isChatLoading: Boolean = false,
     val currentTicket: ConsultationTicket? = null,
+    val isSubmittingConsultation: Boolean = false,
+    val consultationSubmissionError: String? = null,
     val submittedTickets: List<ConsultationTicket> = emptyList(),
     val weatherInfo: WeatherInfo? = null,
     val selectedWeatherLocation: String = "Karnal, Haryana",
@@ -47,6 +53,7 @@ class KisaanViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private var weatherRequestId = 0
 
     init {
         // Initialize default welcome message in AI Agri Assistant
@@ -58,8 +65,10 @@ class KisaanViewModel : ViewModel() {
     }
 
     fun fetchWeather(location: String) {
+        val requestId = ++weatherRequestId
         _uiState.value = _uiState.value.copy(
             selectedWeatherLocation = location,
+            weatherInfo = null,
             isWeatherLoading = true
         )
         viewModelScope.launch {
@@ -67,10 +76,12 @@ class KisaanViewModel : ViewModel() {
                 locationQuery = location,
                 apiKey = com.example.BuildConfig.OPENWEATHER_API_KEY
             )
-            _uiState.value = _uiState.value.copy(
-                weatherInfo = weather,
-                isWeatherLoading = false
-            )
+            if (requestId == weatherRequestId) {
+                _uiState.value = _uiState.value.copy(
+                    weatherInfo = weather,
+                    isWeatherLoading = false
+                )
+            }
         }
     }
 
@@ -111,8 +122,8 @@ class KisaanViewModel : ViewModel() {
         )
     }
 
-    fun toggleDarkMode() {
-        _uiState.value = _uiState.value.copy(isDarkMode = !_uiState.value.isDarkMode)
+    fun setDarkMode(enabled: Boolean) {
+        _uiState.value = _uiState.value.copy(isDarkMode = enabled)
     }
 
     fun navigateTo(route: ScreenRoute) {
@@ -154,36 +165,61 @@ class KisaanViewModel : ViewModel() {
 
     fun submitConsultationRequest(
         farmerName: String,
+        email: String,
         phone: String,
+        financialAid: String,
         villageDistrict: String,
         crop: String,
-        problemDescription: String
-    ): Boolean {
-        if (farmerName.isBlank() || phone.isBlank() || problemDescription.isBlank()) {
-            return false
-        }
+        problemDescription: String,
+        attachment: ConsultationAttachment? = null
+    ) {
+        if (_uiState.value.isSubmittingConsultation) return
 
-        val dateStr = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date())
         val ticketId = "KS-${(100000..999999).random()}"
-
-        val ticket = ConsultationTicket(
+        val submission = ConsultationSubmission(
             ticketId = ticketId,
             farmerName = farmerName.trim(),
+            email = email.trim(),
             phone = phone.trim(),
-            villageDistrict = if (villageDistrict.isBlank()) "District Farm Zone" else villageDistrict.trim(),
-            crop = if (crop.isBlank()) "General Crop Advisory" else crop.trim(),
+            financialAid = financialAid.trim(),
+            villageDistrict = villageDistrict.trim().ifBlank { "Not provided" },
+            crop = crop.trim().ifBlank { "Not provided" },
             problemDescription = problemDescription.trim(),
-            createdAt = dateStr,
-            status = "Assigned to Agronomist"
+            attachment = attachment
         )
 
-        val updatedList = listOf(ticket) + _uiState.value.submittedTickets
         _uiState.value = _uiState.value.copy(
-            currentTicket = ticket,
-            submittedTickets = updatedList,
-            currentRoute = ScreenRoute.REQUEST_SENT
+            isSubmittingConsultation = true,
+            consultationSubmissionError = null
         )
-        return true
+        viewModelScope.launch {
+            try {
+                FormSubmitService.sendConsultation(submission)
+                val ticket = ConsultationTicket(
+                    ticketId = ticketId,
+                    farmerName = submission.farmerName,
+                    phone = submission.phone,
+                    villageDistrict = submission.villageDistrict,
+                    crop = submission.crop,
+                    problemDescription = submission.problemDescription,
+                    createdAt = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+                        .format(Date()),
+                    status = "Sent to Group 11 IDT"
+                )
+                _uiState.value = _uiState.value.copy(
+                    currentTicket = ticket,
+                    submittedTickets = listOf(ticket) + _uiState.value.submittedTickets,
+                    currentRoute = ScreenRoute.REQUEST_SENT,
+                    isSubmittingConsultation = false
+                )
+            } catch (exception: IOException) {
+                _uiState.value = _uiState.value.copy(
+                    isSubmittingConsultation = false,
+                    consultationSubmissionError = exception.localizedMessage
+                        ?: "Could not send your request. Check your internet connection and try again."
+                )
+            }
+        }
     }
 
     fun sendChatMessage(userText: String) {
@@ -249,11 +285,11 @@ class KisaanViewModel : ViewModel() {
                     "Soil Fertility & Fertilizer Management: Avoid applying fertilizers blindly. Base your NPK and micro-nutrient dosages on your Soil Health Card report. Excessive Nitrogen/Urea leads to excessive vegetative growth, lodging, and pest susceptibility. Incorporate well-decomposed Farm Yard Manure (FYM) or green manuring to enrich organic carbon."
                 }
             }
-            q.contains("helpline") || q.contains("call") || q.contains("नंबर") || q.contains("फोन") -> {
+            q.contains("helpline") || q.contains("call") || q.contains("contact") || q.contains("नंबर") || q.contains("फोन") -> {
                 if (lang == Language.HINDI) {
-                    "किसान हेल्पलाइन: आप भारत सरकार के किसान कॉल सेंटर (Kisan Call Center) के निःशुल्क टोल-फ्री नंबर 1800-180-1551 पर प्रातः 6:00 बजे से रात 10:00 बजे तक कॉल करके अपनी क्षेत्रीय भाषा में कृषि विशेषज्ञों से सीधे सलाह ले सकते हैं।"
+                    "ग्रुप 11 IDT से +91 8081392456 पर संपर्क करें या group11idt@outlook.com पर ईमेल भेजें। आप ऐप में परामर्श अनुरोध फ़ॉर्म भी भेज सकते हैं।"
                 } else {
-                    "Agricultural Helplines: You can call the Government of India's Kisan Call Center Toll-Free number 1800-180-1551 between 6:00 AM and 10:00 PM (7 days a week) to speak directly with an agricultural officer in your native language."
+                    "Contact Group 11 IDT at +91 8081392456 or email group11idt@outlook.com. You can also send the consultation form from this app."
                 }
             }
             else -> {

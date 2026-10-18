@@ -36,10 +36,9 @@ object WeatherService {
     suspend fun fetchWeather(
         locationQuery: String = "Karnal, Haryana",
         apiKey: String = BuildConfig.OPENWEATHER_API_KEY
-    ): WeatherInfo = withContext(Dispatchers.IO) {
+    ): WeatherInfo? = withContext(Dispatchers.IO) {
         val cleanQuery = locationQuery.split(",")[0].trim()
 
-        // 1. Try official OpenWeather API if key is present
         if (apiKey.isNotBlank() && apiKey != "YOUR_OPENWEATHER_API_KEY") {
             val openWeatherResult = queryOpenWeather(cleanQuery, locationQuery, apiKey)
             if (openWeatherResult != null) {
@@ -47,14 +46,7 @@ object WeatherService {
             }
         }
 
-        // 2. Try Open-Meteo live API for real-time live metrics (free, keyless fallback)
-        val liveMeteoResult = queryOpenMeteoLive(cleanQuery, locationQuery)
-        if (liveMeteoResult != null) {
-            return@withContext liveMeteoResult
-        }
-
-        // 3. Fallback to calibrated district agricultural telemetry
-        return@withContext fetchDistrictTelemetry(locationQuery)
+        queryOpenMeteoLive(cleanQuery, locationQuery)
     }
 
     private fun queryOpenWeather(city: String, locationLabel: String, apiKey: String): WeatherInfo? {
@@ -266,50 +258,4 @@ object WeatherService {
         }
     }
 
-    private fun fetchDistrictTelemetry(locationLabel: String): WeatherInfo {
-        val city = locationLabel.split(",")[0].trim().lowercase()
-        val isRainy = city.contains("patna") || city.contains("guntur")
-        val baseTemp = when {
-            city.contains("jaipur") -> 30
-            city.contains("indore") || city.contains("nagpur") -> 29
-            city.contains("ludhiana") || city.contains("karnal") -> 26
-            else -> 27
-        }
-
-        val windSpeed = if (isRainy) 18.5 else 11.2
-        val humidity = if (isRainy) 78 else 54
-
-        val sprayStatus = when {
-            isRainy || windSpeed > 22.0 -> SprayWindowStatus.CAUTION
-            windSpeed > 15.0 -> SprayWindowStatus.CAUTION
-            else -> SprayWindowStatus.SAFE
-        }
-
-        val condition = if (isRainy) "Scattered Clouds" else "Sunny & Clear"
-        val desc = if (isRainy) "Partly cloudy with gentle breeze" else "Clear sky with abundant sunshine"
-        val (irrigEn, irrigHi) = generateIrrigationAdvisory(isRainy, baseTemp, humidity)
-        val (workEn, workHi) = generateFieldWorkAdvisory(isRainy, windSpeed)
-
-        val timeStr = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-
-        return WeatherInfo(
-            locationName = locationLabel,
-            temperatureC = baseTemp,
-            feelsLikeC = baseTemp + 1,
-            conditionTitle = condition,
-            conditionDescription = desc,
-            humidityPercent = humidity,
-            windSpeedKmh = windSpeed,
-            pressureHpa = 1013,
-            isRainExpected = isRainy,
-            sprayStatus = sprayStatus,
-            irrigationAdvisoryEn = irrigEn,
-            irrigationAdvisoryHi = irrigHi,
-            fieldWorkAdvisoryEn = workEn,
-            fieldWorkAdvisoryHi = workHi,
-            lastUpdated = timeStr,
-            isLiveOpenWeather = false,
-            sourceLabel = "Agri-Weather Network (Telemetry)"
-        )
-    }
 }

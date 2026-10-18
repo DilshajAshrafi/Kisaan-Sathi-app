@@ -67,7 +67,7 @@ fun RequestSentScreen(
             modifier = Modifier
                 .size(76.dp)
                 .clip(CircleShape)
-                .background(Green100),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -84,7 +84,7 @@ fun RequestSentScreen(
             text = if (isHi) "परामर्श अनुरोध सफलतापूर्वक भेजा गया!" else "Consultation Request Submitted!",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = Green900
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -121,7 +121,7 @@ fun RequestSentScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Gold100)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Text(
@@ -165,14 +165,14 @@ fun RequestSentScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Green100)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(10.dp)
                 ) {
                     Text(
                         text = "${if (isHi) "स्थिति" else "Status"}: ${ticket?.status ?: "Assigned to Agronomist"}",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Green800
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -209,13 +209,13 @@ fun RequestSentScreen(
             Icon(
                 imageVector = Icons.Default.Call,
                 contentDescription = null,
-                tint = Color(0xFFD32F2F),
+                tint = Green800,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = if (isHi) "आपातकालीन किसान कॉल सेंटर (1800-180-1551)" else "Call Toll-Free Kisan Helpline",
-                color = Color(0xFFD32F2F)
+                text = if (isHi) "ग्रुप 11 IDT को कॉल करें (+91 8081392456)" else "Call Group 11 IDT (+91 8081392456)",
+                color = Green800
             )
         }
     }

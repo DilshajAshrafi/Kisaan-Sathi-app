@@ -82,7 +82,7 @@ fun SchemeGuidanceScreen(
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -109,7 +109,7 @@ fun SchemeGuidanceScreen(
                             text = if (isHi) "सरकारी कृषि कल्याण योजनाएं" else "Government Scheme Guidance",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF311B92)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -118,7 +118,7 @@ fun SchemeGuidanceScreen(
                             else
                                 "Eligibility, required documents, and application steps for major farm subsidies.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF4527A0)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -166,7 +166,7 @@ fun SchemeCard(scheme: SchemeInfo, isHi: Boolean) {
                 text = if (isHi) scheme.titleHi else scheme.titleEn,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = if (isHi) scheme.ministryHi else scheme.ministryEn,
@@ -181,13 +181,13 @@ fun SchemeCard(scheme: SchemeInfo, isHi: Boolean) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Green100)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(12.dp)
             ) {
                 Text(
                     text = "${if (isHi) "लाभ" else "Key Benefit"}: ${if (isHi) scheme.benefitHi else scheme.benefitEn}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Green900,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.SemiBold
                 )
             }

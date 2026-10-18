@@ -74,13 +74,13 @@ fun AgriAssistantScreen(
         "पीएम-किसान ₹6000 का लाभ कैसे लें?",
         "पीले रतुआ का जैविक उपचार क्या है?",
         "ड्रिप सिंचाई पर कितनी सब्सिडी मिलती है?",
-        "किसान कॉल सेंटर का टोल फ्री नंबर क्या है?"
+        "ग्रुप 11 IDT से कैसे संपर्क करें?"
     ) else listOf(
         "When is wheat CRI first irrigation?",
         "How to apply for PM-KISAN ₹6000?",
         "Organic remedy for Yellow Rust?",
         "What is drip irrigation subsidy in PMKSY?",
-        "Kisan Call Center toll-free helpline?"
+        "How can I contact Group 11 IDT?"
     )
 
     LaunchedEffect(chatMessages.size) {
@@ -156,8 +156,8 @@ fun AgriAssistantScreen(
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        containerColor = Green100,
-                        labelColor = Green900
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.testTag("quick_question_chip")
                 )
@@ -238,7 +238,7 @@ fun AgriAssistantScreen(
                     },
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(Gold100)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .testTag("chat_voice_mic_button")
                 ) {
                     Icon(
@@ -309,14 +309,14 @@ fun MessageBubble(message: ChatMessage) {
                         bottomEnd = if (isUser) 4.dp else 16.dp
                     )
                 )
-                .background(if (isUser) Green800 else Green100)
+                .background(if (isUser) Green800 else MaterialTheme.colorScheme.surfaceVariant)
                 .padding(14.dp)
                 .fillMaxWidth(0.85f)
         ) {
             Text(
                 text = message.text,
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isUser) Color.White else Green900,
+                color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
                 lineHeight = 20.sp
             )
         }

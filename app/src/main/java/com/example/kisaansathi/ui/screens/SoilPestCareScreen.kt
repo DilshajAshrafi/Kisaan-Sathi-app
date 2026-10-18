@@ -64,7 +64,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Gold100),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -91,7 +91,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                             text = if (isHi) "मृदा पोषण एवं एकीकृत कीट नियंत्रण" else "Soil Health & Integrated Pest Care",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Brown800
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -100,7 +100,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                             else
                                 "Soil testing parameters, organic bio-remedies, and disease management.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF5D4037)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -128,7 +128,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                             text = if (isHi) "मृदा स्वास्थ्य कार्ड के 12 प्रमुख मापदंड" else "12 Vital Soil Health Parameters",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Green900
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -151,7 +151,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                 text = if (isHi) "प्रमुख कीट एवं रोग निवारण गाइड" else "Pest & Disease Advisory Catalog",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -163,7 +163,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
         item {
             Card(
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Green100),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
@@ -179,7 +179,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                             text = if (isHi) "देसी जैविक कीटनाशक बनाने की विधि" else "Natural Bio-Pesticide Recipes",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Green900
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -190,7 +190,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                         else
                             "• Neem Seed Kernel Extract (NSKE 5%): Crush 5 kg neem seeds in 100 L water for 24 hours. Highly effective against aphids, thrips, and young caterpillars.\n\n• Fermented Sour Buttermilk: Mix 5 L sour buttermilk in 100 L water as a protective bio-fungicide against rust and powdery mildew.\n\n• Dashparni Ark: Fermented extract of 10 indigenous bitter plant leaves in cow urine as a powerful broad-spectrum organic insect repellent.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Green900,
+                        color = MaterialTheme.colorScheme.onSurface,
                         lineHeight = 18.sp
                     )
                 }
@@ -201,7 +201,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
         item {
             Card(
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -211,7 +211,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                     Icon(
                         imageVector = Icons.Default.Security,
                         contentDescription = null,
-                        tint = Color(0xFFE65100),
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
                         modifier = Modifier
                             .size(22.dp)
                             .padding(top = 2.dp)
@@ -222,7 +222,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                             text = if (isHi) "दवा छिड़काव सुरक्षा नियम" else "Safe Chemical Application Rules",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE65100)
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -231,7 +231,7 @@ fun SoilPestCareScreen(currentLanguage: Language) {
                             else
                                 "Always spray in the direction of wind during early morning or evening. Wear protective mask, goggles and gloves. Never reuse empty chemical containers.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF5D4037)
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
                 }
@@ -264,18 +264,18 @@ fun PestCareItemCard(item: PestCareItem, isHi: Boolean) {
                     text = if (isHi) item.pestOrDiseaseHi else item.pestOrDiseaseEn,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Green900
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Green100)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = if (isHi) item.cropHi else item.cropEn,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Green800,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Bold
                     )
                 }

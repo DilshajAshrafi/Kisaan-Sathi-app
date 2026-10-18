@@ -1,6 +1,7 @@
 package com.example.kisaansathi.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,9 +29,11 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
@@ -65,6 +68,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,7 +96,9 @@ fun HomeScreen(
     onRefreshWeather: () -> Unit = {},
     onNavigate: (ScreenRoute) -> Unit,
     onEmergencyCall: () -> Unit,
-    onLanguageChange: (Language) -> Unit = {}
+    onContactPhone: () -> Unit,
+    onContactEmail: () -> Unit,
+    onOpenWebsite: () -> Unit = {}
 ) {
     val isHi = currentLanguage == Language.HINDI
     var showLocationDialog by remember { mutableStateOf(false) }
@@ -104,14 +110,6 @@ fun HomeScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Quick Regional Language Selector
-        item {
-            QuickLanguageStrip(
-                currentLanguage = currentLanguage,
-                onLanguageSelected = onLanguageChange
-            )
-        }
-
         // Hero Header Card
         item {
             HeroHeaderCard(
@@ -126,14 +124,15 @@ fun HomeScreen(
                 weather = weatherInfo,
                 currentLanguage = currentLanguage,
                 isLoading = isWeatherLoading,
+                selectedLocation = selectedLocation,
                 onLocationClick = { showLocationDialog = true },
                 onRefresh = onRefreshWeather
             )
         }
 
-        // Emergency Helpline Card
+        // Direct Group 11 IDT contact
         item {
-            EmergencyHelplineCard(
+            TeamPhoneCard(
                 currentLanguage = currentLanguage,
                 onCallClick = onEmergencyCall
             )
@@ -154,7 +153,7 @@ fun HomeScreen(
                 },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
 
@@ -261,7 +260,7 @@ fun HomeScreen(
                 text = if (isHi) "ग्रुप 11 IDT" else "Group 11 IDT",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = if (isHi)
@@ -269,7 +268,7 @@ fun HomeScreen(
                 else
                     "Project Coordinator, Team Lead, AI Engineer & Research Team.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -281,6 +280,15 @@ fun HomeScreen(
                     ExpertCard(expert = expert)
                 }
             }
+        }
+
+        item {
+            TeamContactCard(
+                currentLanguage = currentLanguage,
+                onCall = onContactPhone,
+                onEmail = onContactEmail,
+                onWebsite = onOpenWebsite
+            )
         }
 
         // Consultation Booking Call to Action
@@ -356,90 +364,6 @@ fun HomeScreen(
             },
             onDismiss = { showLocationDialog = false }
         )
-    }
-}
-
-@Composable
-fun QuickLanguageStrip(
-    currentLanguage: Language,
-    onLanguageSelected: (Language) -> Unit
-) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("quick_language_strip")
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = "Language",
-                        tint = Green800,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "भाषा चुनें / Select Regional Language",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Green900
-                    )
-                }
-                Text(
-                    text = "${Language.entries.size} Languages",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray,
-                    fontSize = 11.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(Language.entries) { lang ->
-                    val isSelected = currentLanguage == lang
-                    Surface(
-                        onClick = { onLanguageSelected(lang) },
-                        shape = RoundedCornerShape(20.dp),
-                        color = if (isSelected) Green800 else Green100.copy(alpha = 0.6f),
-                        border = if (isSelected) null else BorderStroke(1.dp, Green800.copy(alpha = 0.2f)),
-                        modifier = Modifier.testTag("quick_lang_chip_${lang.code}")
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            if (isSelected) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                            }
-                            Text(
-                                text = lang.nativeName,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                                color = if (isSelected) Color.White else Green900
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -559,6 +483,7 @@ fun WeatherAdvisoryCard(
     weather: WeatherInfo?,
     currentLanguage: Language,
     isLoading: Boolean,
+    selectedLocation: String,
     onLocationClick: () -> Unit,
     onRefresh: () -> Unit
 ) {
@@ -619,7 +544,7 @@ fun WeatherAdvisoryCard(
 
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE5F3FB)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier
             .fillMaxWidth()
             .testTag("weather_advisory_card")
@@ -642,20 +567,26 @@ fun WeatherAdvisoryCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = weather?.sourceLabel ?: "OpenWeather API Service",
+                        text = weather?.sourceLabel ?: if (isLoading) {
+                            AgriLocale.getWeatherLoadingLabel(currentLanguage)
+                        } else {
+                            AgriLocale.getWeatherUnavailableLabel(currentLanguage)
+                        },
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F3E5D),
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 11.sp
                     )
                 }
 
-                Text(
-                    text = "$updatedLabel: ${weather?.lastUpdated ?: "Live"}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF546E7A),
-                    fontSize = 11.sp
-                )
+                if (weather != null) {
+                    Text(
+                        text = "$updatedLabel: ${weather.lastUpdated}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp
+                    )
+                }
             }
 
             // Header: Location & Actions
@@ -667,7 +598,7 @@ fun WeatherAdvisoryCard(
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(999.dp))
-                        .background(Color.White.copy(alpha = 0.7f))
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
                         .clickable { onLocationClick() }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -675,15 +606,15 @@ fun WeatherAdvisoryCard(
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Farm Location",
-                        tint = Color(0xFF154360),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = weather?.locationName ?: "Select District",
+                        text = weather?.locationName ?: selectedLocation,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF154360)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -692,7 +623,7 @@ fun WeatherAdvisoryCard(
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             strokeWidth = 2.dp,
-                            color = Color(0xFF154360)
+                            color = MaterialTheme.colorScheme.primary
                         )
                     } else {
                         IconButton(
@@ -702,7 +633,7 @@ fun WeatherAdvisoryCard(
                             Icon(
                                 imageVector = Icons.Default.Refresh,
                                 contentDescription = "Refresh Weather",
-                                tint = Color(0xFF154360),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -710,6 +641,25 @@ fun WeatherAdvisoryCard(
                 }
             }
 
+            if (weather == null) {
+                if (!isLoading) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = AgriLocale.getWeatherUnavailableHint(currentLanguage),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        TextButton(onClick = onRefresh) {
+                            Text(AgriLocale.getWeatherRetryLabel(currentLanguage))
+                        }
+                    }
+                }
+            } else {
             Spacer(modifier = Modifier.height(12.dp))
 
             // Main Weather Reading (Temp + Condition)
@@ -721,25 +671,25 @@ fun WeatherAdvisoryCard(
                 Column {
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
-                            text = "${weather?.temperatureC ?: 26}°C",
+                            text = "${weather.temperatureC}°C",
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF0D47A1),
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 36.sp
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "$feelsLabel: ${weather?.feelsLikeC ?: 27}°C",
+                            text = "$feelsLabel: ${weather.feelsLikeC}°C",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF2874A6),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 6.dp)
                         )
                     }
                     Text(
-                        text = weather?.conditionDescription ?: "Clear sky with abundant sunshine",
+                        text = weather.conditionDescription,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF154360)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -747,13 +697,13 @@ fun WeatherAdvisoryCard(
                     modifier = Modifier
                         .size(54.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.8f)),
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (weather?.isRainExpected == true) Icons.Default.CloudQueue else Icons.Default.WbSunny,
+                        imageVector = if (weather.isRainExpected) Icons.Default.CloudQueue else Icons.Default.WbSunny,
                         contentDescription = "Weather Icon",
-                        tint = if (weather?.isRainExpected == true) Color(0xFF1565C0) else Color(0xFFF57F17),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -769,19 +719,19 @@ fun WeatherAdvisoryCard(
                 StatPill(
                     icon = Icons.Default.WaterDrop,
                     label = humidityLabel,
-                    value = "${weather?.humidityPercent ?: 54}%",
+                    value = "${weather.humidityPercent}%",
                     modifier = Modifier.weight(1f)
                 )
                 StatPill(
                     icon = Icons.Default.Air,
                     label = windLabel,
-                    value = "${weather?.windSpeedKmh ?: 11.2} km/h",
+                    value = "${weather.windSpeedKmh} km/h",
                     modifier = Modifier.weight(1f)
                 )
                 StatPill(
                     icon = Icons.Default.Speed,
                     label = pressureLabel,
-                    value = "${weather?.pressureHpa ?: 1013} hPa",
+                    value = "${weather.pressureHpa} hPa",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -789,7 +739,7 @@ fun WeatherAdvisoryCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Spray Window Status Banner
-            val spray = weather?.sprayStatus ?: SprayWindowStatus.SAFE
+            val spray = weather.sprayStatus
             val sprayBg = when (spray) {
                 SprayWindowStatus.SAFE -> Color(0xFFE8F5E9)
                 SprayWindowStatus.CAUTION -> Color(0xFFFFF8E1)
@@ -828,7 +778,7 @@ fun WeatherAdvisoryCard(
                     Text(
                         text = if (isHi) spray.advisoryHi else spray.advisoryEn,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF37474F),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 16.sp
                     )
                 }
@@ -843,9 +793,9 @@ fun WeatherAdvisoryCard(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "$irrigationHeader: ${if (isHi) (weather?.irrigationAdvisoryHi ?: "") else (weather?.irrigationAdvisoryEn ?: "")}",
+                    text = "$irrigationHeader: ${if (isHi) weather.irrigationAdvisoryHi else weather.irrigationAdvisoryEn}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF154360),
+                    color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 16.sp
                 )
             }
@@ -859,11 +809,12 @@ fun WeatherAdvisoryCard(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "$fieldWorkHeader: ${if (isHi) (weather?.fieldWorkAdvisoryHi ?: "") else (weather?.fieldWorkAdvisoryEn ?: "")}",
+                    text = "$fieldWorkHeader: ${if (isHi) weather.fieldWorkAdvisoryHi else weather.fieldWorkAdvisoryEn}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF154360),
+                    color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 16.sp
                 )
+            }
             }
         }
     }
@@ -879,7 +830,7 @@ fun StatPill(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White.copy(alpha = 0.6f))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(vertical = 8.dp, horizontal = 6.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
@@ -887,14 +838,14 @@ fun StatPill(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color(0xFF2874A6),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(13.dp)
                 )
                 Spacer(modifier = Modifier.width(3.dp))
                 Text(
                     text = label,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF2874A6),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 10.sp
                 )
             }
@@ -903,7 +854,7 @@ fun StatPill(
                 text = value,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF0D47A1)
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -998,11 +949,11 @@ fun LocationPickerDialog(
 
 
 @Composable
-fun EmergencyHelplineCard(
+fun TeamPhoneCard(
     currentLanguage: Language,
     onCallClick: () -> Unit
 ) {
-    val helplineTitle = AgriLocale.getHelplineTitle(currentLanguage)
+    val helplineTitle = AgriLocale.getTeamContactTitle(currentLanguage)
     val callButtonText = when (currentLanguage) {
         Language.HINDI -> "कॉल करें"
         Language.PUNJABI -> "ਕਾਲ ਕਰੋ"
@@ -1016,10 +967,10 @@ fun EmergencyHelplineCard(
 
     Card(
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("emergency_helpline_card")
+            .testTag("team_phone_card")
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -1029,13 +980,13 @@ fun EmergencyHelplineCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE53935).copy(alpha = 0.15f)),
+                    .background(Green800.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Phone,
-                    contentDescription = "Emergency",
-                    tint = Color(0xFFD32F2F),
+                    contentDescription = "Call Group 11 IDT",
+                    tint = Green800,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -1045,19 +996,19 @@ fun EmergencyHelplineCard(
                     text = helplineTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFB71C1C)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "1800-180-1551 (6:00 AM - 10:00 PM)",
+                    text = "+91 8081392456",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFFC62828)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Button(
                 onClick = onCallClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                colors = ButtonDefaults.buttonColors(containerColor = Green800),
                 shape = RoundedCornerShape(999.dp),
-                modifier = Modifier.testTag("call_kcc_button")
+                modifier = Modifier.testTag("call_team_button")
             ) {
                 Text(
                     text = callButtonText,
@@ -1141,7 +1092,7 @@ fun FieldReadyChecklistCard(currentLanguage: Language) {
 
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Green100.copy(alpha = 0.5f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
@@ -1149,7 +1100,7 @@ fun FieldReadyChecklistCard(currentLanguage: Language) {
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -1222,6 +1173,61 @@ fun FieldReadyChecklistCard(currentLanguage: Language) {
 }
 
 @Composable
+fun TeamContactCard(
+    currentLanguage: Language,
+    onCall: () -> Unit,
+    onEmail: () -> Unit,
+    onWebsite: () -> Unit = {}
+) {
+    val isHi = currentLanguage == Language.HINDI
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = if (isHi) "Group 11 IDT से संपर्क करें" else "Contact Group 11 IDT",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            OutlinedButton(
+                onClick = onCall,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Phone, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("+91 8081392456")
+            }
+            OutlinedButton(
+                onClick = onEmail,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Email, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("group11idt@outlook.com")
+            }
+            OutlinedButton(
+                onClick = onWebsite,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Public, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(if (isHi) "हमारी वेबसाइट खोलें" else "Open our website")
+            }
+        }
+    }
+}
+
+@Composable
 fun ExpertCard(expert: com.example.kisaansathi.model.AgriExpert) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -1235,26 +1241,37 @@ fun ExpertCard(expert: com.example.kisaansathi.model.AgriExpert) {
             modifier = Modifier.padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(Green100),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
+            if (expert.imageRes != null) {
+                Image(
+                    painter = painterResource(expert.imageRes),
                     contentDescription = expert.name,
-                    tint = Green800,
-                    modifier = Modifier.size(34.dp)
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(CircleShape)
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = expert.name,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(34.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = expert.name,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = Green900
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = expert.designation,

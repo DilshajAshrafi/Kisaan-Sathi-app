@@ -16,11 +16,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.example.kisaansathi.data.ConsultationAttachment
+import com.example.kisaansathi.data.FormSubmitService
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -46,16 +54,38 @@ import com.example.kisaansathi.ui.theme.Green900
 @Composable
 fun ConsultationRequestScreen(
     currentLanguage: Language,
-    onSubmit: (String, String, String, String, String) -> Boolean
+    isSubmitting: Boolean,
+    submissionError: String?,
+    onSubmit: (String, String, String, String, String, String, String, ConsultationAttachment?) -> Unit
 ) {
     val isHi = currentLanguage == Language.HINDI
+    val context = LocalContext.current
 
     var farmerName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+    var financialAid by remember { mutableStateOf("") }
     var villageDistrict by remember { mutableStateOf("") }
     var crop by remember { mutableStateOf("") }
     var problemDescription by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var attachment by remember { mutableStateOf<ConsultationAttachment?>(null) }
+    var formError by remember { mutableStateOf<String?>(null) }
+
+    val mediaPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            val picked = readAttachment(context, uri)
+            if (picked == null) {
+                attachment = null
+                formError = if (isHi)
+                    "फ़ाइल पढ़ी नहीं जा सकी या 4 MB से बड़ी है।"
+                else
+                    "That file couldn't be read or is larger than 4 MB."
+            } else {
+                attachment = picked
+                formError = null
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -85,7 +115,7 @@ fun ConsultationRequestScreen(
                                 text = if (isHi) "कृषि वैज्ञानिक परामर्श फॉर्म" else "Agronomist Consultation Request",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = Green900
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isHi)
@@ -102,10 +132,7 @@ fun ConsultationRequestScreen(
 
                     OutlinedTextField(
                         value = farmerName,
-                        onValueChange = {
-                            farmerName = it
-                            errorMessage = null
-                        },
+                        onValueChange = { farmerName = it },
                         label = { Text(if (isHi) "किसान का नाम *" else "Farmer Name *") },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -116,16 +143,38 @@ fun ConsultationRequestScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text(if (isHi) "ईमेल (वैकल्पिक)" else "Email (optional)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("input_farmer_email"),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
                         value = phone,
-                        onValueChange = {
-                            phone = it
-                            errorMessage = null
-                        },
+                        onValueChange = { phone = it },
                         label = { Text(if (isHi) "मोबाइल नंबर *" else "Mobile Number *") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("input_farmer_phone"),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = financialAid,
+                        onValueChange = { financialAid = it },
+                        label = { Text(if (isHi) "वित्तीय सहायता (वैकल्पिक)" else "Financial aid (optional)") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("input_financial_aid"),
                         singleLine = true
                     )
 
@@ -157,10 +206,7 @@ fun ConsultationRequestScreen(
 
                     OutlinedTextField(
                         value = problemDescription,
-                        onValueChange = {
-                            problemDescription = it
-                            errorMessage = null
-                        },
+                        onValueChange = { problemDescription = it },
                         label = { Text(if (isHi) "समस्या का विवरण (लक्षण, बुवाई तिथि) *" else "Describe Issue / Symptoms *") },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -169,7 +215,26 @@ fun ConsultationRequestScreen(
                         maxLines = 6
                     )
 
-                    errorMessage?.let { error ->
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedButton(
+                        onClick = { mediaPicker.launch("*/*") },
+                        enabled = !isSubmitting,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("attach_media_button")
+                    ) {
+                        Icon(Icons.Default.AttachFile, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            attachment?.fileName
+                                ?: if (isHi) "समस्या की फोटो/वीडियो जोड़ें (वैकल्पिक)"
+                                else "Attach photo or video (optional)"
+                        )
+                    }
+
+                    (formError ?: submissionError)?.let { error ->
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = error,
@@ -182,22 +247,61 @@ fun ConsultationRequestScreen(
 
                     Button(
                         onClick = {
-                            val success = onSubmit(farmerName, phone, villageDistrict, crop, problemDescription)
-                            if (!success) {
-                                errorMessage = if (isHi)
-                                    "कृपया नाम, मोबाइल नंबर और समस्या का विवरण अवश्य भरें।"
-                                else
-                                    "Please fill required fields (Name, Mobile, and Description)."
+                            val normalizedPhone = phone.filter { it.isDigit() }
+                            val validPhone = normalizedPhone.length == 10 ||
+                                (normalizedPhone.length == 12 && normalizedPhone.startsWith("91"))
+                            val validEmail = email.isBlank() ||
+                                android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
+                            when {
+                                farmerName.isBlank() || !validPhone || problemDescription.isBlank() -> {
+                                    formError = if (isHi)
+                                        "कृपया नाम, सही मोबाइल नंबर और समस्या का विवरण भरें।"
+                                    else
+                                        "Enter your name, a valid mobile number, and the issue details."
+                                }
+                                !validEmail -> {
+                                    formError = if (isHi)
+                                        "कृपया सही ईमेल पता दर्ज करें या खाली छोड़ें।"
+                                    else
+                                        "Enter a valid email address or leave it blank."
+                                }
+                                else -> {
+                                    formError = null
+                                    onSubmit(
+                                        farmerName,
+                                        email,
+                                        phone,
+                                        financialAid,
+                                        villageDistrict,
+                                        crop,
+                                        problemDescription,
+                                        attachment
+                                    )
+                                }
                             }
                         },
+                        enabled = !isSubmitting,
                         colors = ButtonDefaults.buttonColors(containerColor = Green800),
                         shape = RoundedCornerShape(999.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("submit_consultation_button")
                     ) {
+                        if (isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
                         Text(
-                            text = if (isHi) "परामर्श अनुरोध भेजें" else "Submit Consultation Request",
+                            text = when {
+                                isSubmitting && isHi -> "भेजा जा रहा है..."
+                                isSubmitting -> "Sending request..."
+                                isHi -> "ईमेल द्वारा अनुरोध भेजें"
+                                else -> "Send consultation request"
+                            },
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
@@ -209,7 +313,7 @@ fun ConsultationRequestScreen(
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Gold100.copy(alpha = 0.5f)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -223,14 +327,26 @@ fun ConsultationRequestScreen(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = if (isHi)
-                            "अनुरोध प्राप्त होने पर हमारे कृषि अधिकारी 24 घंटे के भीतर फोन या व्हाट्सएप द्वारा संपर्क करेंगे।"
-                        else
-                            "Once submitted, our agricultural extension team will contact you via Phone/WhatsApp within 24 hours.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF5D4037)
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = if (isHi)
+                                "अनुरोध प्राप्त होने पर हमारी कृषि टीम 24 घंटे के भीतर आपसे संपर्क करेगी।"
+                            else
+                                "Our agricultural extension team will contact you within 24 hours.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Phone: +91 8081392456",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Email: group11idt@outlook.com",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -238,5 +354,31 @@ fun ConsultationRequestScreen(
         item {
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+}
+
+private fun readAttachment(context: android.content.Context, uri: android.net.Uri): ConsultationAttachment? {
+    val resolver = context.contentResolver
+    val limit = FormSubmitService.MAX_ATTACHMENT_BYTES
+    return try {
+        val bytes = resolver.openInputStream(uri)?.use { input ->
+            val output = java.io.ByteArrayOutputStream()
+            val buffer = ByteArray(8192)
+            while (true) {
+                val read = input.read(buffer)
+                if (read < 0) break
+                output.write(buffer, 0, read)
+                if (output.size() > limit) return null
+            }
+            output.toByteArray()
+        } ?: return null
+        val name = resolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)
+            ?.use { if (it.moveToFirst()) it.getString(0) else null }
+            ?: "attachment"
+        ConsultationAttachment(name, resolver.getType(uri) ?: "application/octet-stream", bytes)
+    } catch (_: java.io.IOException) {
+        null
+    } catch (_: SecurityException) {
+        null
     }
 }

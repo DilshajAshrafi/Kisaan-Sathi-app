@@ -118,6 +118,50 @@ object AgriLocale {
         Language.ENGLISH -> "Pressure"
     }
 
+    fun getWeatherLoadingLabel(lang: Language): String = when (lang) {
+        Language.HINDI -> "मौसम जानकारी लोड हो रही है"
+        Language.PUNJABI -> "ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ ਲੋਡ ਹੋ ਰਹੀ ਹੈ"
+        Language.BENGALI -> "আবহাওয়ার তথ্য লোড হচ্ছে"
+        Language.GUJARATI -> "હવામાન માહિતી લોડ થઈ રહી છે"
+        Language.MARATHI -> "हवामान माहिती लोड होत आहे"
+        Language.TAMIL -> "வானிலை தகவல் ஏற்றப்படுகிறது"
+        Language.TELUGU -> "వాతావరణ సమాచారం లోడ్ అవుతోంది"
+        Language.ENGLISH -> "Loading live weather"
+    }
+
+    fun getWeatherUnavailableLabel(lang: Language): String = when (lang) {
+        Language.HINDI -> "मौसम जानकारी उपलब्ध नहीं है"
+        Language.PUNJABI -> "ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ"
+        Language.BENGALI -> "আবহাওয়ার তথ্য পাওয়া যাচ্ছে না"
+        Language.GUJARATI -> "હવામાન માહિતી ઉપલબ્ધ નથી"
+        Language.MARATHI -> "हवामान माहिती उपलब्ध नाही"
+        Language.TAMIL -> "வானிலை தகவல் கிடைக்கவில்லை"
+        Language.TELUGU -> "వాతావరణ సమాచారం అందుబాటులో లేదు"
+        Language.ENGLISH -> "Weather data unavailable"
+    }
+
+    fun getWeatherUnavailableHint(lang: Language): String = when (lang) {
+        Language.HINDI -> "इंटरनेट कनेक्शन जांचें और फिर से कोशिश करें।"
+        Language.PUNJABI -> "ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+        Language.BENGALI -> "ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+        Language.GUJARATI -> "ઇન્ટરનેટ કનેક્શન તપાસો અને ફરી પ્રયાસ કરો."
+        Language.MARATHI -> "इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा."
+        Language.TAMIL -> "இணைய இணைப்பை சரிபார்த்து மீண்டும் முயற்சிக்கவும்."
+        Language.TELUGU -> "ఇంటర్నెట్ కనెక్షన్ తనిఖీ చేసి మళ్లీ ప్రయత్నించండి."
+        Language.ENGLISH -> "Check your internet connection and try again."
+    }
+
+    fun getWeatherRetryLabel(lang: Language): String = when (lang) {
+        Language.HINDI -> "फिर से कोशिश करें"
+        Language.PUNJABI -> "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
+        Language.BENGALI -> "আবার চেষ্টা করুন"
+        Language.GUJARATI -> "ફરી પ્રયાસ કરો"
+        Language.MARATHI -> "पुन्हा प्रयत्न करा"
+        Language.TAMIL -> "மீண்டும் முயற்சிக்கவும்"
+        Language.TELUGU -> "మళ్లీ ప్రయత్నించండి"
+        Language.ENGLISH -> "Try again"
+    }
+
     fun getSprayWindowLabel(status: SprayWindowStatus, lang: Language): String = when (lang) {
         Language.HINDI -> when (status) {
             SprayWindowStatus.SAFE -> "🟢 छिड़काव के लिए उपयुक्त"
@@ -172,15 +216,15 @@ object AgriLocale {
         Language.ENGLISH -> "Pan-India & Universal Agricultural Standard"
     }
 
-    fun getHelplineTitle(lang: Language): String = when (lang) {
-        Language.HINDI -> "किसान कॉल सेंटर (निःशुल्क टोल-फ्री)"
-        Language.PUNJABI -> "ਕਿਸਾਨ ਕਾਲ ਸੈਂਟਰ (ਮੁਫ਼ਤ ਟੋਲ-ਫ੍ਰੀ)"
-        Language.GUJARATI -> "કિસાન કૉલ સેન્ટર (ટોલ-ફ્રી)"
-        Language.MARATHI -> "किसान कॉल सेंटर (टोल-फ्री)"
-        Language.BENGALI -> "কিসান কল সেন্টার (টোল-ফ্রি)"
-        Language.TAMIL -> "கிசான் கால் சென்டர் (இலவசம்)"
-        Language.TELUGU -> "కిసాన్ కాల్ సెంటర్ (టోల్-ఫ్రీ)"
-        Language.ENGLISH -> "Kisan Call Center (Toll-Free Helpline)"
+    fun getTeamContactTitle(lang: Language): String = when (lang) {
+        Language.HINDI -> "ग्रुप 11 IDT सहायता"
+        Language.PUNJABI -> "ਗਰੁੱਪ 11 IDT ਸਹਾਇਤਾ"
+        Language.GUJARATI -> "ગ્રુપ 11 IDT સહાય"
+        Language.MARATHI -> "ग्रुप 11 IDT मदत"
+        Language.BENGALI -> "গ্রুপ 11 IDT সহায়তা"
+        Language.TAMIL -> "குரூப் 11 IDT உதவி"
+        Language.TELUGU -> "గ్రూప్ 11 IDT సహాయం"
+        Language.ENGLISH -> "Group 11 IDT Support"
     }
 
     fun getConsultationButtonText(lang: Language): String = when (lang) {
