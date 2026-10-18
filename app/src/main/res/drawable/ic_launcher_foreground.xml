@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Golden Wheat & Sprout Symbol -->
+    <!-- Main stem -->
+    <path
+        android:strokeColor="#D9A441"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,82 C54,58 54,34 54,26" />
+    
+    <!-- Left Wheat grains -->
+    <path
+        android:fillColor="#E6B85C"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,65 C44,63 40,56 46,50 C52,48 54,58 54,65 Z" />
+    <path
+        android:fillColor="#F0C76B"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,52 C44,50 40,43 46,37 C52,35 54,45 54,52 Z" />
+    <path
+        android:fillColor="#FFD87A"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,39 C44,37 42,30 48,24 C53,23 54,32 54,39 Z" />
+
+    <!-- Right Wheat grains -->
+    <path
+        android:fillColor="#E6B85C"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,65 C64,63 68,56 62,50 C56,48 54,58 54,65 Z" />
+    <path
+        android:fillColor="#F0C76B"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,52 C64,50 68,43 62,37 C56,35 54,45 54,52 Z" />
+    <path
+        android:fillColor="#FFD87A"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,39 C64,37 66,30 60,24 C55,23 54,32 54,39 Z" />
+
+    <!-- Top Grain Tip -->
+    <path
+        android:fillColor="#FFF0AA"
+        android:strokeColor="#B88628"
+        android:strokeWidth="1"
+        android:pathData="M54,26 C50,20 54,14 54,14 C54,14 58,20 54,26 Z" />
+
+    <!-- Fresh Green Leaf Sprout Accent -->
+    <path
+        android:fillColor="#48B26D"
+        android:pathData="M54,74 C42,76 34,70 36,60 C46,62 52,69 54,74 Z" />
+    <path
+        android:fillColor="#62C587"
+        android:pathData="M54,70 C66,72 74,66 72,56 C62,58 56,65 54,70 Z" />
+</vector>

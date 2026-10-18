@@ -1,0 +1,82 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    namespace = "com.example"
+    compileSdk = 36
+
+    val envFile = rootProject.file(".env")
+    val envProperties = Properties()
+    if (envFile.exists()) {
+        FileInputStream(envFile).use { stream ->
+            envProperties.load(stream)
+        }
+    }
+    val openWeatherKey = envProperties.getProperty("OPENWEATHER_API_KEY")
+        ?: System.getenv("OPENWEATHER_API_KEY")
+        ?: ""
+    val geminiKey = envProperties.getProperty("GEMINI_API_KEY")
+        ?: System.getenv("GEMINI_API_KEY")
+        ?: ""
+
+    defaultConfig {
+        applicationId = "com.aistudio.kisaansathi.kxmpzq"
+        minSdk = 24
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "OPENWEATHER_API_KEY", "\"$openWeatherKey\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.kotlinx.coroutines.android)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+}

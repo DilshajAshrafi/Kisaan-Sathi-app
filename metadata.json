@@ -1,0 +1,8 @@
+{
+  "name": "Kisaan Sathi",
+  "description": "Smart farming support app offering crop consultation, irrigation intelligence, soil health and pest care, government scheme assistance, and AI agricultural assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

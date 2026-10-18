@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Kisaan Sathi</string>
+    <string name="tagline">Smart Farming Support</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_crop">Crop Care</string>
+    <string name="nav_irrigation">Irrigation</string>
+    <string name="nav_soil_pest">Soil &amp; Pest</string>
+    <string name="nav_schemes">Schemes</string>
+    <string name="nav_assistant">Agri AI</string>
+    <string name="emergency_call_center">Kisan Call Center: 1800-180-1551 (Toll Free)</string>
+</resources>
