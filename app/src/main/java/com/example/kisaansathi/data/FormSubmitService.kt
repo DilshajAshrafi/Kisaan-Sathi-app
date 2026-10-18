@@ -31,6 +31,7 @@ data class ConsultationSubmission(
 object FormSubmitService {
 
     private const val ENDPOINT = "https://formsubmit.co/ajax/group11idt@outlook.com"
+    private const val WEBSITE_ORIGIN = "https://kissansathiindia.vercel.app"
     const val MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024
 
     suspend fun sendConsultation(submission: ConsultationSubmission) = withContext(Dispatchers.IO) {
@@ -75,6 +76,9 @@ object FormSubmitService {
             connection.connectTimeout = 15_000
             connection.readTimeout = 45_000
             connection.doOutput = true
+            // FormSubmit rejects requests without a web origin, so identify as the project website.
+            connection.setRequestProperty("Origin", WEBSITE_ORIGIN)
+            connection.setRequestProperty("Referer", "$WEBSITE_ORIGIN/")
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
             connection.outputStream.use { it.write(body.toByteArray()) }

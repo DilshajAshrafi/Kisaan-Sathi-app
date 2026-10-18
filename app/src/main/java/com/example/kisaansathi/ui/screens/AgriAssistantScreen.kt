@@ -1,5 +1,17 @@
 package com.example.kisaansathi.ui.screens
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import java.util.Locale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import com.example.kisaansathi.ui.components.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,11 +75,37 @@ fun AgriAssistantScreen(
     currentLanguage: Language,
     chatMessages: List<ChatMessage>,
     isLoading: Boolean,
-    onSendMessage: (String) -> Unit
+    onSendMessage: (String) -> Unit,
+    speechTag: String? = null
 ) {
     val isHi = currentLanguage == Language.HINDI
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val context = LocalContext.current
+    val speechLocale = speechTag ?: if (isHi) "hi-IN" else "en-IN"
+
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
+    DisposableEffect(Unit) {
+        val engine = TextToSpeech(context) { }
+        tts = engine
+        onDispose {
+            engine.stop()
+            engine.shutdown()
+        }
+    }
+    val speak: (String) -> Unit = { text ->
+        tts?.let {
+            it.language = Locale.forLanguageTag(speechLocale)
+            it.speak(text, TextToSpeech.QUEUE_FLUSH, null, "kisaan-reply")
+        }
+    }
+
+    val voiceLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val spoken = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
+        if (result.resultCode == Activity.RESULT_OK && !spoken.isNullOrBlank()) {
+            inputText = spoken
+        }
+    }
 
     val quickQuestions = if (isHi) listOf(
         "गेहूं में पहली सिंचाई (CRI) कब करें?",
@@ -174,7 +212,7 @@ fun AgriAssistantScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(chatMessages) { message ->
-                MessageBubble(message = message)
+                MessageBubble(message = message, onSpeak = speak)
             }
 
             if (isLoading) {
@@ -230,11 +268,26 @@ fun AgriAssistantScreen(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Voice Mic query simulator button
+                // Voice input through the device's speech recogniser
                 IconButton(
                     onClick = {
-                        val sampleQuery = if (isHi) "गेहूं में यूरिया की सही मात्रा क्या है?" else "What is the recommended nitrogen dose for wheat?"
-                        inputText = sampleQuery
+                        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                            putExtra(RecognizerIntent.EXTRA_LANGUAGE, speechLocale)
+                            putExtra(
+                                RecognizerIntent.EXTRA_PROMPT,
+                                if (isHi) "अपना सवाल बोलें" else "Speak your question"
+                            )
+                        }
+                        try {
+                            voiceLauncher.launch(intent)
+                        } catch (_: ActivityNotFoundException) {
+                            Toast.makeText(
+                                context,
+                                if (isHi) "इस फोन पर वॉइस इनपुट उपलब्ध नहीं है।" else "Voice input isn't available on this phone.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     },
                     modifier = Modifier
                         .clip(CircleShape)
@@ -274,7 +327,7 @@ fun AgriAssistantScreen(
 }
 
 @Composable
-fun MessageBubble(message: ChatMessage) {
+fun MessageBubble(message: ChatMessage, onSpeak: ((String) -> Unit)? = null) {
     val isUser = message.role == MessageRole.USER
 
     Row(
@@ -313,12 +366,26 @@ fun MessageBubble(message: ChatMessage) {
                 .padding(14.dp)
                 .fillMaxWidth(0.85f)
         ) {
-            Text(
-                text = message.text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
-                lineHeight = 20.sp
-            )
+            Column {
+                Text(
+                    text = message.text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 20.sp
+                )
+                if (!isUser && onSpeak != null) {
+                    IconButton(
+                        onClick = { onSpeak(message.text) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = "Read aloud",
+                            tint = Green800
+                        )
+                    }
+                }
+            }
         }
 
         if (isUser) {

@@ -32,7 +32,13 @@ import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.FilterChip
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.CurrencyRupee
+import androidx.compose.material.icons.filled.Grass
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.LocationOn
@@ -53,7 +59,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import com.example.kisaansathi.ui.components.Text
 import androidx.compose.material3.TextButton
 import com.example.kisaansathi.data.AgriLocale
 import androidx.compose.runtime.Composable
@@ -98,7 +104,10 @@ fun HomeScreen(
     onEmergencyCall: () -> Unit,
     onContactPhone: () -> Unit,
     onContactEmail: () -> Unit,
-    onOpenWebsite: () -> Unit = {}
+    onOpenWebsite: () -> Unit = {},
+    onWhatsApp: () -> Unit = {},
+    fontScale: Float = 1f,
+    onFontScaleChange: (Float) -> Unit = {}
 ) {
     val isHi = currentLanguage == Language.HINDI
     var showLocationDialog by remember { mutableStateOf(false) }
@@ -283,12 +292,23 @@ fun HomeScreen(
         }
 
         item {
-            TeamContactCard(
-                currentLanguage = currentLanguage,
-                onCall = onContactPhone,
-                onEmail = onContactEmail,
-                onWebsite = onOpenWebsite
-            )
+            AppearAnimated(100) { MoreToolsCard(currentLanguage = currentLanguage, onNavigate = onNavigate) }
+        }
+
+        item {
+            AppearAnimated(200) { TextSizeCard(currentLanguage, fontScale, onFontScaleChange) }
+        }
+
+        item {
+            AppearAnimated(300) {
+                TeamContactCard(
+                    currentLanguage = currentLanguage,
+                    onCall = onContactPhone,
+                    onEmail = onContactEmail,
+                    onWebsite = onOpenWebsite,
+                    onWhatsApp = onWhatsApp
+                )
+            }
         }
 
         // Consultation Booking Call to Action
@@ -1173,11 +1193,94 @@ fun FieldReadyChecklistCard(currentLanguage: Language) {
 }
 
 @Composable
+fun AppearAnimated(delayMillis: Int, content: @Composable () -> Unit) {
+    var visible by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(delayMillis.toLong())
+        visible = true
+    }
+    androidx.compose.animation.AnimatedVisibility(
+        visible = visible,
+        enter = androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(400)) +
+            androidx.compose.animation.slideInVertically(androidx.compose.animation.core.tween(400)) { it / 6 }
+    ) { content() }
+}
+
+@Composable
+fun TextSizeCard(currentLanguage: Language, fontScale: Float, onChange: (Float) -> Unit) {
+    val isHi = currentLanguage == Language.HINDI
+    val options = listOf(
+        1f to (if (isHi) "सामान्य" else "Normal"),
+        1.15f to (if (isHi) "बड़ा" else "Large"),
+        1.3f to (if (isHi) "बहुत बड़ा" else "Extra large")
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = if (isHi) "अक्षर का आकार" else "Text size",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            options.forEach { (scale, label) ->
+                FilterChip(
+                    selected = kotlin.math.abs(fontScale - scale) < 0.01f,
+                    onClick = { onChange(scale) },
+                    label = { Text(label) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MoreToolsCard(currentLanguage: Language, onNavigate: (ScreenRoute) -> Unit) {
+    val isHi = currentLanguage == Language.HINDI
+    val tools = listOf(
+        Triple(ScreenRoute.MSP_PRICES, if (isHi) "MSP भाव" else "MSP Prices", Icons.Default.CurrencyRupee),
+        Triple(ScreenRoute.CROP_CALENDAR, if (isHi) "फसल कैलेंडर" else "Crop Calendar", Icons.Default.CalendarMonth),
+        Triple(ScreenRoute.SOIL_HEALTH, if (isHi) "मृदा सहायक" else "Soil Helper", Icons.Default.Grass),
+        Triple(ScreenRoute.MY_REQUESTS, if (isHi) "मेरे अनुरोध" else "My Requests", Icons.Default.History)
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = if (isHi) "और उपयोगी टूल" else "More tools",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        tools.chunked(2).forEach { rowTools ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                rowTools.forEach { (route, label, icon) ->
+                    Card(
+                        onClick = { onNavigate(route) },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(icon, contentDescription = null, tint = Green800)
+                            Spacer(Modifier.width(10.dp))
+                            Text(label, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun TeamContactCard(
     currentLanguage: Language,
     onCall: () -> Unit,
     onEmail: () -> Unit,
-    onWebsite: () -> Unit = {}
+    onWebsite: () -> Unit = {},
+    onWhatsApp: () -> Unit = {}
 ) {
     val isHi = currentLanguage == Language.HINDI
 
@@ -1213,6 +1316,15 @@ fun TeamContactCard(
                 Icon(Icons.Default.Email, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("group11idt@outlook.com")
+            }
+            OutlinedButton(
+                onClick = onWhatsApp,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Chat, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(if (isHi) "WhatsApp पर चैट करें" else "Chat on WhatsApp")
             }
             OutlinedButton(
                 onClick = onWebsite,

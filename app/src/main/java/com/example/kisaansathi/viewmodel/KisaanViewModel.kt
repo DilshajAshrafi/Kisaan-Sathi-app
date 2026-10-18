@@ -6,12 +6,14 @@ import com.example.kisaansathi.data.ConsultationAttachment
 import com.example.kisaansathi.data.ConsultationSubmission
 import com.example.kisaansathi.data.FormSubmitService
 import com.example.kisaansathi.data.KisaanRepository
+import com.example.kisaansathi.data.LocalStore
 import com.example.kisaansathi.data.WeatherService
 import com.example.kisaansathi.model.ChatMessage
 import com.example.kisaansathi.model.ConsultationTicket
 import com.example.kisaansathi.model.CropGuide
 import com.example.kisaansathi.model.IrrigationAdvice
 import com.example.kisaansathi.model.Language
+import com.example.kisaansathi.model.IndianLanguage
 import com.example.kisaansathi.model.MessageRole
 import com.example.kisaansathi.model.PestCareItem
 import com.example.kisaansathi.model.SchemeInfo
@@ -31,6 +33,7 @@ import java.util.UUID
 data class UiState(
     val currentRoute: ScreenRoute = ScreenRoute.HOME,
     val selectedLanguage: Language = Language.ENGLISH,
+    val chosenLanguage: IndianLanguage = IndianLanguage.ENGLISH,
     val isDarkMode: Boolean = false,
     val schemesSearchQuery: String = "",
     val selectedCropFilter: String = "All",
@@ -46,7 +49,9 @@ data class UiState(
     val submittedTickets: List<ConsultationTicket> = emptyList(),
     val weatherInfo: WeatherInfo? = null,
     val selectedWeatherLocation: String = "Karnal, Haryana",
-    val isWeatherLoading: Boolean = false
+    val isWeatherLoading: Boolean = false,
+    val showOnboarding: Boolean = false,
+    val fontScale: Float = 1f
 )
 
 class KisaanViewModel : ViewModel() {
@@ -54,6 +59,7 @@ class KisaanViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var weatherRequestId = 0
+    private var store: LocalStore? = null
 
     init {
         // Initialize default welcome message in AI Agri Assistant
@@ -77,12 +83,39 @@ class KisaanViewModel : ViewModel() {
                 apiKey = com.example.BuildConfig.OPENWEATHER_API_KEY
             )
             if (requestId == weatherRequestId) {
+                if (weather != null) store?.cacheWeather(weather)
+                // Offline: show the last genuine reading for this place, clearly labelled as saved.
+                val shown = weather ?: store?.cachedWeather(location)
                 _uiState.value = _uiState.value.copy(
-                    weatherInfo = weather,
+                    weatherInfo = shown,
                     isWeatherLoading = false
                 )
             }
         }
+    }
+
+    /** Connects on-device storage and restores saved language, text size and request history. */
+    fun attachStore(localStore: LocalStore) {
+        if (store != null) return
+        store = localStore
+        _uiState.value = _uiState.value.copy(
+            showOnboarding = !localStore.onboardingDone,
+            fontScale = localStore.fontScale,
+            submittedTickets = localStore.loadRequests()
+        )
+        if (localStore.onboardingDone) {
+            setIndianLanguage(localStore.indianLanguage)
+        }
+    }
+
+    fun completeOnboarding() {
+        store?.onboardingDone = true
+        _uiState.value = _uiState.value.copy(showOnboarding = false)
+    }
+
+    fun setFontScale(scale: Float) {
+        store?.fontScale = scale
+        _uiState.value = _uiState.value.copy(fontScale = scale)
     }
 
     fun refreshWeather() {
@@ -120,6 +153,12 @@ class KisaanViewModel : ViewModel() {
             selectedLanguage = language,
             chatMessages = listOf(welcomeMsg)
         )
+    }
+
+    fun setIndianLanguage(language: IndianLanguage) {
+        store?.indianLanguage = language
+        _uiState.value = _uiState.value.copy(chosenLanguage = language)
+        setLanguage(language.base)
     }
 
     fun setDarkMode(enabled: Boolean) {
@@ -206,9 +245,11 @@ class KisaanViewModel : ViewModel() {
                         .format(Date()),
                     status = "Sent to Group 11 IDT"
                 )
+                val history = listOf(ticket) + _uiState.value.submittedTickets
+                store?.saveRequests(history)
                 _uiState.value = _uiState.value.copy(
                     currentTicket = ticket,
-                    submittedTickets = listOf(ticket) + _uiState.value.submittedTickets,
+                    submittedTickets = history,
                     currentRoute = ScreenRoute.REQUEST_SENT,
                     isSubmittingConsultation = false
                 )

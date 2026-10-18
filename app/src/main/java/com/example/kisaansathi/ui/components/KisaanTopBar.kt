@@ -20,7 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import com.example.kisaansathi.ui.components.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -47,7 +47,8 @@ fun KisaanTopBar(
     onBackClick: () -> Unit,
     onLanguageClick: () -> Unit,
     onThemeToggle: () -> Unit,
-    onEmergencyCallClick: () -> Unit
+    onEmergencyCallClick: () -> Unit,
+    languageLabel: String = currentLanguage.nativeName
 ) {
     TopAppBar(
         title = {
@@ -103,7 +104,7 @@ fun KisaanTopBar(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = currentLanguage.nativeName,
+                    text = languageLabel,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,

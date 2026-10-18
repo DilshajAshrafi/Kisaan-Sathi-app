@@ -37,16 +37,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kisaansathi.data.AgriLocale
-import com.example.kisaansathi.model.Language
+import com.example.kisaansathi.model.IndianLanguage
+import com.example.kisaansathi.data.Translations
 import com.example.kisaansathi.ui.theme.Green100
 import com.example.kisaansathi.ui.theme.Green800
 import com.example.kisaansathi.ui.theme.Green900
 
 @Composable
 fun LanguageDialog(
-    currentLanguage: Language,
-    onLanguageSelected: (Language) -> Unit,
+    currentLanguage: IndianLanguage,
+    onLanguageSelected: (IndianLanguage) -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -98,7 +98,7 @@ fun LanguageDialog(
                         .height(340.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(Language.entries) { lang ->
+                    items(IndianLanguage.entries) { lang ->
                         val isSelected = currentLanguage == lang
                         Card(
                             shape = RoundedCornerShape(14.dp),
@@ -144,7 +144,8 @@ fun LanguageDialog(
                                         )
                                     }
                                     Text(
-                                        text = AgriLocale.getRegionDescription(lang),
+                                        text = if (Translations.supports(lang)) "${lang.region} • voice: ${if (lang.speechTag.startsWith("hi")) "Hindi" else "English"}"
+                                        else "${lang.region} • app text in ${lang.base.displayName}; voice: ${if (lang.speechTag.startsWith("hi")) "Hindi" else "English"}",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 11.sp

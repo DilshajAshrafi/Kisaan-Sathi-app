@@ -20,6 +20,8 @@ You can download and install the pre-built APK directly onto any Android phone (
 
 ## 🌟 Core Features
 
+- **New in this version**: first-launch intro, MSP price guide (reference rates, not live mandi prices), crop calendar, soil health helper, "My Requests" history, voice input and read-aloud in the AI assistant, text-size control, WhatsApp contact, offline weather copy and a remembered language.
+
 1. **🌾 Crop Consultation & Agronomic Planning**
    - Detailed advisories for major Indian crops: Wheat (गेहूं), Paddy/Rice (धान), Mustard (सरसों), Cotton (कपास), and Pulses (चना).
    - Scientific recommendations for sowing windows, soil fit, row-to-row spacing, seed rate, and critical growth stages.

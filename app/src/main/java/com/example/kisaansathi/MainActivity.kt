@@ -16,7 +16,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.example.kisaansathi.ui.components.LocalIndianLanguage
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import com.example.kisaansathi.data.LocalStore
+import com.example.kisaansathi.ui.screens.CropCalendarScreen
+import com.example.kisaansathi.ui.screens.MspPricesScreen
+import com.example.kisaansathi.ui.screens.MyRequestsScreen
+import com.example.kisaansathi.ui.screens.OnboardingScreen
+import com.example.kisaansathi.ui.screens.SoilHealthScreen
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,6 +65,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        viewModel.attachStore(LocalStore(applicationContext))
         viewModel.setDarkMode(
             getPreferences(MODE_PRIVATE).getBoolean(PREFERENCE_DARK_MODE, false)
         )
@@ -61,14 +79,33 @@ class MainActivity : ComponentActivity() {
                 viewModel.navigateTo(ScreenRoute.HOME)
             }
 
+            val baseDensity = LocalDensity.current
             KisaanSathiTheme(darkTheme = uiState.isDarkMode) {
+              CompositionLocalProvider(
+              LocalIndianLanguage provides uiState.chosenLanguage,
+              LocalDensity provides Density(baseDensity.density, baseDensity.fontScale * uiState.fontScale)
+              ) {
                 val view = LocalView.current
                 SideEffect {
                     val controller = WindowCompat.getInsetsController(window, view)
                     controller.isAppearanceLightStatusBars = false
                     controller.isAppearanceLightNavigationBars = !uiState.isDarkMode
                 }
-                Scaffold(
+                if (uiState.showOnboarding) {
+                    OnboardingScreen(
+                        currentLanguage = uiState.selectedLanguage,
+                        onLanguageClick = { showLanguageDialog = true },
+                        languageLabel = uiState.chosenLanguage.nativeName,
+                        onFinish = { viewModel.completeOnboarding() }
+                    )
+                    if (showLanguageDialog) {
+                        LanguageDialog(
+                            currentLanguage = uiState.chosenLanguage,
+                            onLanguageSelected = { lang -> viewModel.setIndianLanguage(lang) },
+                            onDismiss = { showLanguageDialog = false }
+                        )
+                    }
+                } else Scaffold(
                     containerColor = MaterialTheme.colorScheme.background,
                     topBar = {
                         KisaanTopBar(
@@ -77,6 +114,7 @@ class MainActivity : ComponentActivity() {
                             isDarkMode = uiState.isDarkMode,
                             onBackClick = { viewModel.navigateTo(ScreenRoute.HOME) },
                             onLanguageClick = { showLanguageDialog = true },
+                            languageLabel = uiState.chosenLanguage.nativeName,
                             onThemeToggle = {
                                 val isDarkMode = !uiState.isDarkMode
                                 viewModel.setDarkMode(isDarkMode)
@@ -101,7 +139,16 @@ class MainActivity : ComponentActivity() {
                             .background(MaterialTheme.colorScheme.background)
                             .padding(innerPadding)
                     ) {
-                        when (uiState.currentRoute) {
+                        AnimatedContent(
+                            targetState = uiState.currentRoute,
+                            transitionSpec = {
+                                val forward = targetState != ScreenRoute.HOME
+                                (fadeIn(tween(300)) + slideInHorizontally(tween(300)) { if (forward) it / 8 else -it / 8 }) togetherWith
+                                    (fadeOut(tween(150)) + slideOutHorizontally(tween(150)) { if (forward) -it / 8 else it / 8 })
+                            },
+                            label = "screen_transition"
+                        ) { route ->
+                        when (route) {
                             ScreenRoute.HOME -> HomeScreen(
                                 currentLanguage = uiState.selectedLanguage,
                                 weatherInfo = uiState.weatherInfo,
@@ -113,7 +160,10 @@ class MainActivity : ComponentActivity() {
                                 onEmergencyCall = { dialTeamContact() },
                                 onContactPhone = { openTeamContact("tel:+918081392456") },
                                 onContactEmail = { openTeamContact("mailto:group11idt@outlook.com") },
-                                onOpenWebsite = { openTeamContact("https://kissansathiindia.vercel.app/") }
+                                onOpenWebsite = { openTeamContact("https://kissansathiindia.vercel.app/") },
+                                onWhatsApp = { openTeamContact("https://wa.me/918081392456") },
+                                fontScale = uiState.fontScale,
+                                onFontScaleChange = { viewModel.setFontScale(it) }
                             )
                             ScreenRoute.CROP_CONSULTATION -> CropConsultationScreen(
                                 currentLanguage = uiState.selectedLanguage,
@@ -143,7 +193,8 @@ class MainActivity : ComponentActivity() {
                                 currentLanguage = uiState.selectedLanguage,
                                 chatMessages = uiState.chatMessages,
                                 isLoading = uiState.isChatLoading,
-                                onSendMessage = { text -> viewModel.sendChatMessage(text) }
+                                onSendMessage = { text -> viewModel.sendChatMessage(text) },
+                                speechTag = uiState.chosenLanguage.speechTag
                             )
                             ScreenRoute.CONSULTATION_REQUEST -> ConsultationRequestScreen(
                                 currentLanguage = uiState.selectedLanguage,
@@ -159,17 +210,27 @@ class MainActivity : ComponentActivity() {
                                 onBackHome = { viewModel.navigateTo(ScreenRoute.HOME) },
                                 onCallHelpline = { dialTeamContact() }
                             )
+                            ScreenRoute.MSP_PRICES -> MspPricesScreen(uiState.selectedLanguage)
+                            ScreenRoute.CROP_CALENDAR -> CropCalendarScreen(uiState.selectedLanguage)
+                            ScreenRoute.SOIL_HEALTH -> SoilHealthScreen(uiState.selectedLanguage)
+                            ScreenRoute.MY_REQUESTS -> MyRequestsScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                tickets = uiState.submittedTickets,
+                                onNewRequest = { viewModel.navigateTo(ScreenRoute.CONSULTATION_REQUEST) }
+                            )
+                        }
                         }
 
                         if (showLanguageDialog) {
                             LanguageDialog(
-                                currentLanguage = uiState.selectedLanguage,
-                                onLanguageSelected = { lang -> viewModel.setLanguage(lang) },
+                                currentLanguage = uiState.chosenLanguage,
+                                onLanguageSelected = { lang -> viewModel.setIndianLanguage(lang) },
                                 onDismiss = { showLanguageDialog = false }
                             )
                         }
                     }
                 }
+              }
             }
         }
     }

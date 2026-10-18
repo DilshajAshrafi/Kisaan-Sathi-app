@@ -13,6 +13,47 @@ enum class Language(val code: String, val displayName: String, val nativeName: S
     TELUGU("te", "Telugu", "తెలుగు")
 }
 
+/** Every language offered in the picker; screens render with [base] until a full translation exists. */
+enum class IndianLanguage(
+    val code: String,
+    val displayName: String,
+    val nativeName: String,
+    val region: String,
+    val base: Language,
+    val speechTag: String
+) {
+    ENGLISH("en", "English", "English", "All India", Language.ENGLISH, "en-IN"),
+    HINDI("hi", "Hindi", "हिंदी", "Uttar Pradesh, Bihar, Haryana, Madhya Pradesh", Language.HINDI, "hi-IN"),
+    PUNJABI("pa", "Punjabi", "ਪੰਜਾਬੀ", "Punjab", Language.PUNJABI, "en-IN"),
+    BENGALI("bn", "Bengali", "বাংলা", "West Bengal, Tripura", Language.BENGALI, "en-IN"),
+    GUJARATI("gu", "Gujarati", "ગુજરાતી", "Gujarat", Language.GUJARATI, "en-IN"),
+    MARATHI("mr", "Marathi", "मराठी", "Maharashtra", Language.MARATHI, "en-IN"),
+    TAMIL("ta", "Tamil", "தமிழ்", "Tamil Nadu", Language.TAMIL, "en-IN"),
+    TELUGU("te", "Telugu", "తెలుగు", "Andhra Pradesh, Telangana", Language.TELUGU, "en-IN"),
+    KANNADA("kn", "Kannada", "ಕನ್ನಡ", "Karnataka", Language.ENGLISH, "en-IN"),
+    MALAYALAM("ml", "Malayalam", "മലയാളം", "Kerala", Language.ENGLISH, "en-IN"),
+    ODIA("or", "Odia", "ଓଡ଼ିଆ", "Odisha", Language.ENGLISH, "en-IN"),
+    ASSAMESE("as", "Assamese", "অসমীয়া", "Assam", Language.ENGLISH, "en-IN"),
+    URDU("ur", "Urdu", "اردو", "Jammu & Kashmir, Uttar Pradesh, Telangana", Language.ENGLISH, "en-IN"),
+    NEPALI("ne", "Nepali", "नेपाली", "Sikkim, Darjeeling", Language.ENGLISH, "en-IN"),
+    MAITHILI("mai", "Maithili", "मैथिली", "Bihar", Language.ENGLISH, "hi-IN"),
+    DOGRI("doi", "Dogri", "डोगरी", "Jammu", Language.HINDI, "hi-IN"),
+    KONKANI("kok", "Konkani", "कोंकणी", "Goa, Konkan coast", Language.ENGLISH, "en-IN"),
+    BODO("brx", "Bodo", "बड़ो", "Assam", Language.HINDI, "hi-IN"),
+    KASHMIRI("ks", "Kashmiri", "کٲشُر", "Kashmir", Language.HINDI, "hi-IN"),
+    SANSKRIT("sa", "Sanskrit", "संस्कृतम्", "All India", Language.ENGLISH, "hi-IN"),
+    SANTALI("sat", "Santali", "ᱥᱟᱱᱛᱟᱲᱤ", "Jharkhand, Odisha, West Bengal", Language.HINDI, "hi-IN"),
+    SINDHI("sd", "Sindhi", "سنڌي", "Gujarat, Rajasthan", Language.ENGLISH, "en-IN"),
+    MANIPURI("mni", "Manipuri (Meitei)", "মৈতৈলোন্", "Manipur", Language.BENGALI, "en-IN");
+
+    val isFullyTranslated: Boolean get() = base.code == code
+
+    companion object {
+        fun fromCode(code: String?): IndianLanguage =
+            entries.firstOrNull { it.code == code } ?: ENGLISH
+    }
+}
+
 enum class ScreenRoute {
     HOME,
     CROP_CONSULTATION,
@@ -21,7 +62,11 @@ enum class ScreenRoute {
     SCHEME_GUIDANCE,
     AGRI_ASSISTANT,
     CONSULTATION_REQUEST,
-    REQUEST_SENT
+    REQUEST_SENT,
+    MSP_PRICES,
+    CROP_CALENDAR,
+    SOIL_HEALTH,
+    MY_REQUESTS
 }
 
 data class CropGuide(
