@@ -9,7 +9,7 @@ import com.example.kisaansathi.model.IndianLanguage
  */
 object Translations {
 
-    private val english = listOf(
+    internal val english = listOf(
         "Namaste, Farmer Friend! 🙏",
         "Smart Farming Support & Scientific Guidance",
         "Home",
