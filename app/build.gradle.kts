@@ -43,8 +43,29 @@ android {
         buildConfigField("String", "DATA_GOV_IN_API_KEY", "\"$dataGovApiKey\"")
     }
 
+    val keystoreFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+    if (keystoreFile.exists()) {
+        FileInputStream(keystoreFile).use { keystoreProperties.load(it) }
+    }
+    val hasReleaseKeystore = keystoreProperties.getProperty("storeFile") != null
+
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (hasReleaseKeystore) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

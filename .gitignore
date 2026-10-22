@@ -23,3 +23,7 @@ debug.keystore
 debug.keystore.base64
 node_modules
 .kotlin
+
+keystore.properties
+*.jks
+*.keystore
