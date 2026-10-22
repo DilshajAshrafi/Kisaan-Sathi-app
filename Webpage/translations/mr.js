@@ -187,7 +187,7 @@ if (typeof window !== "undefined") {
     "Offers collateral-free loans up to ₹10 lakh to non-corporate, non-farm small and micro-enterprises through commercial banks and NBFCs.": "व्यावसायिक बँका आणि NBFC मार्फत बिगर-कॉर्पोरेट, बिगर-कृषी लघु व सूक्ष्म उद्योगांना ₹10 lakh पर्यंत तारणमुक्त कर्ज देते.",
     "A credit-linked subsidy program aimed at generating employment opportunities in rural and urban areas by funding the establishment of micro-enterprises.": "सूक्ष्म उद्योग उभारणीसाठी निधी देऊन ग्रामीण व शहरी भागात रोजगार निर्माण करणारा पत-संलग्न अनुदान कार्यक्रम.",
     "Facilitates bank loans between ₹10 lakh and ₹1 crore to at least one SC/ST borrower and one woman borrower per bank branch to set up a greenfield enterprise in manufacturing, services, or trading.": "प्रत्येक बँक शाखेत किमान एका SC/ST आणि एका महिला कर्जदाराला उत्पादन, सेवा किंवा व्यापारातील नवीन उद्योग उभारण्यासाठी ₹10 lakh ते ₹1 crore पर्यंतचे कर्ज मिळवून देते.",
-    "Provides early-stage startups with financial assistance for proof of concept, prototype development, product trials, and commercialization.": "सुरुवातीच्या टप्प्यातील स्टार्टअपना संकल्पना पडताळणी, नमुना विकास, उत्पादन चाचण्या आणि व्यावसायिकीकरणासाठी आर्थिक मदत देते."
+    "Provides early-stage startups with financial assistance for proof of concept, prototype development, product trials, and commercialization.": "सुरुवातीच्या टप्प्यातील स्टार्टअपना संकल्पना पडताळणी, नमुना विकास, उत्पादन चाचण्या आणि व्यावसायिकीकरणासाठी आर्थिक मदत देते.",
     "Ask Agri AI": "Agri AI ला विचारा",
     "Open agriculture assistant": "कृषी सहाय्यक उघडा",
     "Close agriculture assistant": "कृषी सहाय्यक बंद करा",

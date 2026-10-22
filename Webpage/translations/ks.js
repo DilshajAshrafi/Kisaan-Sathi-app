@@ -193,7 +193,7 @@ if (typeof window !== "undefined") {
     "Pradhan Mantri MUDRA Yojana (PMMY)": "پردھان منتری مُدرا یوجنا (PMMY)",
     "Prime Minister’s Employment Generation Programme (PMEGP)": "پردھان منتری روزگار پیداوار پروگرام (PMEGP)",
     "Stand-Up India": "اسٹینڈ اپ انڈیا",
-    "Startup India Seed Fund Scheme": "اسٹارٹ اپ انڈیا سیڈ فنڈ سکیم"
+    "Startup India Seed Fund Scheme": "اسٹارٹ اپ انڈیا سیڈ فنڈ سکیم",
     "Ask Agri AI": "ایگری اے آئی سۭتۍ پوٚچھو",
     "Open agriculture assistant": "زراعتی معاون کُھولِو",
     "Close agriculture assistant": "زراعتی معاون بند کٔرِو",

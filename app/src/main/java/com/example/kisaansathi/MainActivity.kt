@@ -50,11 +50,17 @@ import com.example.kisaansathi.ui.components.LanguageDialog
 import com.example.kisaansathi.ui.screens.AgriAssistantScreen
 import com.example.kisaansathi.ui.screens.ConsultationRequestScreen
 import com.example.kisaansathi.ui.screens.CropConsultationScreen
+import com.example.kisaansathi.ui.screens.CropPhotoGuideScreen
+import com.example.kisaansathi.ui.screens.ExpenseTrackerScreen
+import com.example.kisaansathi.ui.screens.FarmDiaryScreen
 import com.example.kisaansathi.ui.screens.HomeScreen
 import com.example.kisaansathi.ui.screens.IrrigationSupportScreen
+import com.example.kisaansathi.ui.screens.MandiPricesScreen
 import com.example.kisaansathi.ui.screens.RequestSentScreen
 import com.example.kisaansathi.ui.screens.SchemeGuidanceScreen
+import com.example.kisaansathi.ui.screens.SchemeEligibilityScreen
 import com.example.kisaansathi.ui.screens.SoilPestCareScreen
+import com.example.kisaansathi.ui.screens.WeatherAlertsScreen
 import com.example.kisaansathi.ui.theme.KisaanSathiTheme
 import com.example.kisaansathi.viewmodel.KisaanViewModel
 
@@ -200,6 +206,9 @@ class MainActivity : ComponentActivity() {
                                 currentLanguage = uiState.selectedLanguage,
                                 isSubmitting = uiState.isSubmittingConsultation,
                                 submissionError = uiState.consultationSubmissionError,
+                                initialPhotoUri = uiState.consultationPhotoUri,
+                                initialCrop = uiState.consultationCrop,
+                                initialProblem = uiState.consultationProblem,
                                 onSubmit = { name, email, phone, aid, loc, crop, desc, file ->
                                     viewModel.submitConsultationRequest(name, email, phone, aid, loc, crop, desc, file)
                                 }
@@ -211,12 +220,51 @@ class MainActivity : ComponentActivity() {
                                 onCallHelpline = { dialTeamContact() }
                             )
                             ScreenRoute.MSP_PRICES -> MspPricesScreen(uiState.selectedLanguage)
-                            ScreenRoute.CROP_CALENDAR -> CropCalendarScreen(uiState.selectedLanguage)
+                            ScreenRoute.CROP_CALENDAR -> CropCalendarScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                cropPlan = uiState.cropPlan,
+                                onSaveCropPlan = { viewModel.saveCropPlan(it) }
+                            )
                             ScreenRoute.SOIL_HEALTH -> SoilHealthScreen(uiState.selectedLanguage)
                             ScreenRoute.MY_REQUESTS -> MyRequestsScreen(
                                 currentLanguage = uiState.selectedLanguage,
                                 tickets = uiState.submittedTickets,
                                 onNewRequest = { viewModel.navigateTo(ScreenRoute.CONSULTATION_REQUEST) }
+                            )
+                            ScreenRoute.EXPENSE_TRACKER -> ExpenseTrackerScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                entries = uiState.farmExpenses,
+                                onSave = { viewModel.saveFarmExpense(it) },
+                                onDelete = { viewModel.deleteFarmExpense(it) }
+                            )
+                            ScreenRoute.WEATHER_ALERTS -> WeatherAlertsScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                weather = uiState.weatherInfo,
+                                isLoading = uiState.isWeatherLoading,
+                                onRefresh = { viewModel.refreshWeather() }
+                            )
+                            ScreenRoute.FARM_DIARY -> FarmDiaryScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                entries = uiState.farmDiaryEntries,
+                                onSave = { viewModel.saveFarmDiaryEntry(it) },
+                                onDelete = { viewModel.deleteFarmDiaryEntry(it) }
+                            )
+                            ScreenRoute.SCHEME_ELIGIBILITY -> SchemeEligibilityScreen(uiState.selectedLanguage)
+                            ScreenRoute.CROP_PHOTO_GUIDE -> CropPhotoGuideScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                onRequestExpertReview = { photoUri, crop, problem ->
+                                    viewModel.setConsultationPrefill(photoUri, crop, problem)
+                                    viewModel.navigateTo(ScreenRoute.CONSULTATION_REQUEST)
+                                }
+                            )
+                            ScreenRoute.MANDI_PRICES -> MandiPricesScreen(
+                                currentLanguage = uiState.selectedLanguage,
+                                prices = uiState.mandiPrices,
+                                isLoading = uiState.isMandiLoading,
+                                error = uiState.mandiError,
+                                onSearch = { commodity, state, district ->
+                                    viewModel.fetchMandiPrices(commodity, state, district)
+                                }
                             )
                         }
                         }

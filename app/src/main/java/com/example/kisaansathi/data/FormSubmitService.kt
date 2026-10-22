@@ -30,7 +30,8 @@ data class ConsultationSubmission(
 
 object FormSubmitService {
 
-    private const val ENDPOINT = "https://formsubmit.co/ajax/group11idt@outlook.com"
+    // FormSubmit only forwards file attachments on the regular endpoint, not on /ajax/.
+    private const val ENDPOINT = "https://formsubmit.co/group11idt@outlook.com"
     private const val WEBSITE_ORIGIN = "https://kissansathiindia.vercel.app"
     const val MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024
 
@@ -40,6 +41,8 @@ object FormSubmitService {
             "_subject" to "Kisaan Sathi app support request ${submission.ticketId}",
             "_template" to "table",
             "_captcha" to "false",
+            "_honey" to "",
+            "_blacklist" to "viagra, casino, crypto giveaway, loan offer, seo service",
             "Ticket ID" to submission.ticketId,
             "name" to submission.farmerName,
             "phone" to submission.phone,
@@ -95,19 +98,22 @@ object FormSubmitService {
                 throw IOException("FormSubmit returned HTTP $statusCode.")
             }
 
-            val response = try {
-                JSONObject(responseBody)
-            } catch (exception: JSONException) {
-                throw IOException("FormSubmit returned an unreadable response.", exception)
-            }
-            val success = response.optString("success").equals("true", ignoreCase = true) ||
-                response.optBoolean("success")
-            if (!success) {
-                throw IOException(
-                    response.optString("message").ifBlank {
-                        "FormSubmit could not send the consultation request."
-                    }
-                )
+            // The regular endpoint answers with an HTML thank-you page; JSON is only checked when returned.
+            if (responseBody.trimStart().startsWith("{")) {
+                val response = try {
+                    JSONObject(responseBody)
+                } catch (exception: JSONException) {
+                    throw IOException("FormSubmit returned an unreadable response.", exception)
+                }
+                val success = response.optString("success").equals("true", ignoreCase = true) ||
+                    response.optBoolean("success")
+                if (!success) {
+                    throw IOException(
+                        response.optString("message").ifBlank {
+                            "FormSubmit could not send the consultation request."
+                        }
+                    )
+                }
             }
         } finally {
             connection.disconnect()

@@ -2,6 +2,9 @@ package com.example.kisaansathi.data
 
 import android.content.Context
 import com.example.kisaansathi.model.ConsultationTicket
+import com.example.kisaansathi.model.CropPlan
+import com.example.kisaansathi.model.FarmDiaryEntry
+import com.example.kisaansathi.model.FarmExpense
 import com.example.kisaansathi.model.Language
 import com.example.kisaansathi.model.IndianLanguage
 import com.example.kisaansathi.model.SprayWindowStatus
@@ -13,7 +16,8 @@ import org.json.JSONObject
 /** Small on-device store for preferences, request history and the last good weather reading. */
 class LocalStore(context: Context) {
 
-    private val prefs = context.getSharedPreferences("kisaan_sathi_store", Context.MODE_PRIVATE)
+    private val appContext = context.applicationContext
+    private val prefs = appContext.getSharedPreferences("kisaan_sathi_store", Context.MODE_PRIVATE)
 
     var onboardingDone: Boolean
         get() = prefs.getBoolean(KEY_ONBOARDING, false)
@@ -70,6 +74,108 @@ class LocalStore(context: Context) {
             )
         }
         prefs.edit().putString(KEY_REQUESTS, array.toString()).apply()
+    }
+
+    fun loadFarmExpenses(): List<FarmExpense> =
+        readArray(KEY_FARM_EXPENSES) { item ->
+            FarmExpense(
+                id = item.getString("id"),
+                crop = item.getString("crop"),
+                description = item.getString("description"),
+                amount = item.getDouble("amount"),
+                isIncome = item.getBoolean("isIncome"),
+                date = item.getString("date")
+            )
+        }
+
+    fun saveFarmExpenses(expenses: List<FarmExpense>) {
+        val array = JSONArray()
+        expenses.take(MAX_FARM_ENTRIES).forEach { entry ->
+            array.put(
+                JSONObject()
+                    .put("id", entry.id)
+                    .put("crop", entry.crop)
+                    .put("description", entry.description)
+                    .put("amount", entry.amount)
+                    .put("isIncome", entry.isIncome)
+                    .put("date", entry.date)
+            )
+        }
+        prefs.edit().putString(KEY_FARM_EXPENSES, array.toString()).apply()
+    }
+
+    fun loadFarmDiary(): List<FarmDiaryEntry> =
+        readArray(KEY_FARM_DIARY) { item ->
+            FarmDiaryEntry(
+                id = item.getString("id"),
+                crop = item.getString("crop"),
+                note = item.getString("note"),
+                date = item.getString("date"),
+                photoUri = item.optString("photoUri").takeIf { it.isNotBlank() }
+            )
+        }
+
+    fun saveFarmDiary(entries: List<FarmDiaryEntry>) {
+        val array = JSONArray()
+        entries.take(MAX_FARM_ENTRIES).forEach { entry ->
+            array.put(
+                JSONObject()
+                    .put("id", entry.id)
+                    .put("crop", entry.crop)
+                    .put("note", entry.note)
+                    .put("date", entry.date)
+                    .put("photoUri", entry.photoUri)
+            )
+        }
+        prefs.edit().putString(KEY_FARM_DIARY, array.toString()).apply()
+    }
+
+    fun loadCropPlan(): CropPlan? {
+        val raw = prefs.getString(KEY_CROP_PLAN, null) ?: return null
+        return try {
+            val item = JSONObject(raw)
+            CropPlan(
+                crop = item.getString("crop"),
+                sowingDate = item.getString("sowingDate"),
+                reminderDate = item.getString("reminderDate"),
+                reminderTask = item.getString("reminderTask")
+            )
+        } catch (_: JSONException) {
+            null
+        }
+    }
+
+    fun saveCropPlan(plan: CropPlan?) {
+        val editor = prefs.edit()
+        if (plan == null) {
+            editor.remove(KEY_CROP_PLAN)
+        } else {
+            editor.putString(
+                KEY_CROP_PLAN,
+                JSONObject()
+                    .put("crop", plan.crop)
+                    .put("sowingDate", plan.sowingDate)
+                    .put("reminderDate", plan.reminderDate)
+                    .put("reminderTask", plan.reminderTask)
+                    .toString()
+            )
+        }
+        editor.apply()
+        CropReminderScheduler.schedule(appContext, plan)
+    }
+
+    fun restoreCropReminder() {
+        CropReminderScheduler.schedule(appContext, loadCropPlan())
+    }
+
+    private fun <T> readArray(key: String, decode: (JSONObject) -> T): List<T> {
+        val raw = prefs.getString(key, null) ?: return emptyList()
+        return try {
+            val array = JSONArray(raw)
+            (0 until array.length()).map { decode(array.getJSONObject(it)) }
+        } catch (_: JSONException) {
+            emptyList()
+        }
     }
 
     fun cacheWeather(weather: WeatherInfo) {
@@ -135,6 +241,10 @@ class LocalStore(context: Context) {
         const val KEY_LANGUAGE = "language"
         const val KEY_REQUESTS = "requests"
         const val KEY_WEATHER = "weather_cache"
+        const val KEY_FARM_EXPENSES = "farm_expenses"
+        const val KEY_FARM_DIARY = "farm_diary"
+        const val KEY_CROP_PLAN = "crop_plan"
         const val MAX_SAVED_REQUESTS = 50
+        const val MAX_FARM_ENTRIES = 300
     }
 }

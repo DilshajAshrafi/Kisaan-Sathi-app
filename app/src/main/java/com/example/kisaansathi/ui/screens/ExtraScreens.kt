@@ -1,5 +1,8 @@
 package com.example.kisaansathi.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,9 +42,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -52,6 +61,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.kisaansathi.model.ConsultationTicket
+import com.example.kisaansathi.model.CropPlan
 import com.example.kisaansathi.model.Language
 import com.example.kisaansathi.ui.theme.Gold100
 import com.example.kisaansathi.ui.theme.Gold500
@@ -59,33 +69,40 @@ import com.example.kisaansathi.ui.theme.Green700
 import com.example.kisaansathi.ui.theme.Green800
 import com.example.kisaansathi.ui.theme.Green900
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-private class IntroPage(val icon: ImageVector, val titleEn: String, val titleHi: String, val bodyEn: String, val bodyHi: String)
+private class IntroPage(val icon: ImageVector, val titleEn: String, val titleHi: String, val bodyEn: String, val bodyHi: String, val top: Color, val bottom: Color)
 
 private val introPages = listOf(
     IntroPage(
         Icons.Default.Agriculture,
         "Your farming companion", "आपका खेती का साथी",
         "Crop care, irrigation planning, soil health and government schemes, all in one place.",
-        "फसल देखभाल, सिंचाई योजना, मिट्टी की सेहत और सरकारी योजनाएं, सब एक ही जगह।"
+        "फसल देखभाल, सिंचाई योजना, मिट्टी की सेहत और सरकारी योजनाएं, सब एक ही जगह।",
+        Color(0xFF14532D), Color(0xFF2E7D32)
     ),
     IntroPage(
         Icons.Default.Cloud,
         "Weather that guides you", "मौसम जो राह दिखाए",
         "Live weather, spray windows and farm advisories. Your last reading stays available offline.",
-        "लाइव मौसम, छिड़काव का सही समय और खेती सलाह। आख़िरी जानकारी ऑफ़लाइन भी उपलब्ध रहती है।"
+        "लाइव मौसम, छिड़काव का सही समय और खेती सलाह। आख़िरी जानकारी ऑफ़लाइन भी उपलब्ध रहती है।",
+        Color(0xFF0D47A1), Color(0xFF1976D2)
     ),
     IntroPage(
         Icons.Default.AutoAwesome,
         "Ask in your voice", "अपनी आवाज़ में पूछें",
-        "Speak your question to the AI assistant and listen to the answer in your language.",
-        "एआई सहायक से बोलकर सवाल पूछें और जवाब अपनी भाषा में सुनें।"
+        "Speak your question to the AI assistant and get the answer in your language.",
+        "एआई सहायक से बोलकर सवाल पूछें और जवाब अपनी भाषा में पाएं।",
+        Color(0xFF4A148C), Color(0xFF7B1FA2)
     ),
     IntroPage(
         Icons.Default.Support,
         "Experts are one tap away", "विशेषज्ञ बस एक टैप दूर",
         "Send your problem with a photo to the Group 11 IDT team and track every request.",
-        "फोटो के साथ अपनी समस्या ग्रुप 11 IDT टीम को भेजें और हर अनुरोध की स्थिति देखें।"
+        "फोटो के साथ अपनी समस्या ग्रुप 11 IDT टीम को भेजें और हर अनुरोध की स्थिति देखें।",
+        Color(0xFFE65100), Color(0xFFF57C00)
     )
 )
 
@@ -101,11 +118,19 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState(pageCount = { introPages.size })
     val scope = rememberCoroutineScope()
     val isLast = pagerState.currentPage == introPages.lastIndex
+    val bgTop by androidx.compose.animation.animateColorAsState(introPages[pagerState.currentPage].top, androidx.compose.animation.core.tween(600), label = "introTop")
+    val bgBottom by androidx.compose.animation.animateColorAsState(introPages[pagerState.currentPage].bottom, androidx.compose.animation.core.tween(600), label = "introBottom")
+    val pulse = androidx.compose.animation.core.rememberInfiniteTransition(label = "introPulse")
+    val pulseScale by pulse.animateFloat(
+        1f, 1.18f,
+        androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(1400), androidx.compose.animation.core.RepeatMode.Reverse),
+        label = "introPulseScale"
+    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Green900, Green800, Green700)))
+            .background(Brush.verticalGradient(listOf(bgTop, bgBottom)))
     ) {
         Column(
             modifier = Modifier
@@ -150,15 +175,23 @@ fun OnboardingScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(96.dp)
-                            .background(Color.White.copy(alpha = 0.16f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(page.icon, contentDescription = null, tint = Gold500, modifier = Modifier.size(48.dp))
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(150.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .size(110.dp)
+                                .graphicsLayer { scaleX = pulseScale; scaleY = pulseScale }
+                                .background(Color.White.copy(alpha = 0.12f), CircleShape)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .background(Color.White.copy(alpha = 0.22f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(page.icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(54.dp))
+                        }
                     }
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(16.dp))
                     Text(
                         text = if (isHi) page.titleHi else page.titleEn,
                         style = MaterialTheme.typography.titleLarge,
@@ -377,9 +410,37 @@ private val cropCalendars = listOf(
 )
 
 @Composable
-fun CropCalendarScreen(currentLanguage: Language) {
+fun CropCalendarScreen(
+    currentLanguage: Language,
+    cropPlan: CropPlan?,
+    onSaveCropPlan: (CropPlan?) -> Unit
+) {
     val isHi = currentLanguage == Language.HINDI
-    var selectedIndex by remember { mutableStateOf(0) }
+    val context = LocalContext.current
+    var selectedIndex by remember(cropPlan?.crop) {
+        mutableStateOf(cropCalendars.indexOfFirst { it.nameEn == cropPlan?.crop }.coerceAtLeast(0))
+    }
+    var sowingDate by remember(cropPlan) {
+        mutableStateOf(cropPlan?.sowingDate ?: SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()))
+    }
+    var reminderDate by remember(cropPlan) {
+        mutableStateOf(cropPlan?.reminderDate ?: SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()))
+    }
+    var reminderTask by remember(cropPlan) { mutableStateOf(cropPlan?.reminderTask.orEmpty()) }
+    var dateError by remember { mutableStateOf<String?>(null) }
+    var permissionMessage by remember { mutableStateOf<String?>(null) }
+    var pendingPlan by remember { mutableStateOf<CropPlan?>(null) }
+    val notificationPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        pendingPlan?.let { onSaveCropPlan(it) }
+        pendingPlan = null
+        permissionMessage = if (granted) null else if (isHi) {
+            "रिमाइंडर सहेजा गया। सूचना पाने के लिए सेटिंग में नोटिफिकेशन चालू करें।"
+        } else {
+            "Plan saved. Enable notifications in system settings to receive reminders."
+        }
+    }
     val calendar = cropCalendars[selectedIndex]
 
     LazyColumn(
@@ -393,6 +454,91 @@ fun CropCalendarScreen(currentLanguage: Language) {
                 if (isHi) "उत्तर भारत के सामान्य मौसम के अनुसार चरण-दर-चरण कार्य। अपने क्षेत्र के अनुसार तारीखें बदल सकती हैं।"
                 else "Step-by-step tasks for typical North India seasons. Dates vary by region."
             )
+        }
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        if (isHi) "अपनी फसल और तारीखें सेट करें" else "Set your crop dates",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        if (isHi) "बुवाई और अगले खेत कार्य की तारीख भरें। रिमाइंडर सुबह 9 बजे आएगा।"
+                        else "Enter sowing and next field-task dates. The reminder is scheduled for 9 AM.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    OutlinedTextField(
+                        sowingDate,
+                        { sowingDate = it },
+                        label = { Text(if (isHi) "बुवाई (YYYY-MM-DD)" else "Sowing date (YYYY-MM-DD)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        reminderDate,
+                        { reminderDate = it },
+                        label = { Text(if (isHi) "अगला कार्य (YYYY-MM-DD)" else "Next task reminder (YYYY-MM-DD)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        reminderTask,
+                        { reminderTask = it },
+                        label = { Text(if (isHi) "याद दिलाने वाला खेत कार्य" else "Field task to remember") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    dateError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    permissionMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    Button(
+                        onClick = {
+                            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { isLenient = false }
+                            val validDates = listOf(sowingDate, reminderDate).all { value ->
+                                runCatching {
+                                    dateFormat.parse(value)?.let { dateFormat.format(it) == value } == true
+                                }.getOrDefault(false)
+                            }
+                            if (!validDates || reminderDate <= SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()) || reminderTask.isBlank()) {
+                                dateError = if (isHi) {
+                                    "सही तारीखें, भविष्य की रिमाइंडर तारीख और खेत कार्य भरें।"
+                                } else {
+                                    "Enter valid dates, a future reminder date, and the field task."
+                                }
+                            } else {
+                                val plan = CropPlan(calendar.nameEn, sowingDate, reminderDate, reminderTask.trim())
+                                dateError = null
+                                if (
+                                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                    ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    pendingPlan = plan
+                                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    onSaveCropPlan(plan)
+                                    permissionMessage = null
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text(if (isHi) "फसल योजना और रिमाइंडर सहेजें" else "Save crop plan & reminder") }
+                    if (cropPlan != null) {
+                        androidx.compose.material3.TextButton(
+                            onClick = {
+                                onSaveCropPlan(null)
+                                permissionMessage = if (isHi) "रिमाइंडर हटा दिया गया।" else "Reminder removed."
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text(if (isHi) "रिमाइंडर हटाएं" else "Remove reminder") }
+                    }
+                }
+            }
         }
         item {
             androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

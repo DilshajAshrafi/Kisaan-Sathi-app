@@ -7,13 +7,18 @@ import com.example.kisaansathi.data.ConsultationSubmission
 import com.example.kisaansathi.data.FormSubmitService
 import com.example.kisaansathi.data.KisaanRepository
 import com.example.kisaansathi.data.LocalStore
+import com.example.kisaansathi.data.MandiPriceService
 import com.example.kisaansathi.data.WeatherService
 import com.example.kisaansathi.model.ChatMessage
 import com.example.kisaansathi.model.ConsultationTicket
+import com.example.kisaansathi.model.CropPlan
 import com.example.kisaansathi.model.CropGuide
+import com.example.kisaansathi.model.FarmDiaryEntry
+import com.example.kisaansathi.model.FarmExpense
 import com.example.kisaansathi.model.IrrigationAdvice
 import com.example.kisaansathi.model.Language
 import com.example.kisaansathi.model.IndianLanguage
+import com.example.kisaansathi.model.MandiPrice
 import com.example.kisaansathi.model.MessageRole
 import com.example.kisaansathi.model.PestCareItem
 import com.example.kisaansathi.model.SchemeInfo
@@ -51,7 +56,16 @@ data class UiState(
     val selectedWeatherLocation: String = "Karnal, Haryana",
     val isWeatherLoading: Boolean = false,
     val showOnboarding: Boolean = false,
-    val fontScale: Float = 1f
+    val fontScale: Float = 1f,
+    val farmExpenses: List<FarmExpense> = emptyList(),
+    val farmDiaryEntries: List<FarmDiaryEntry> = emptyList(),
+    val cropPlan: CropPlan? = null,
+    val mandiPrices: List<MandiPrice> = emptyList(),
+    val isMandiLoading: Boolean = false,
+    val mandiError: String? = null,
+    val consultationPhotoUri: String? = null,
+    val consultationCrop: String? = null,
+    val consultationProblem: String? = null
 )
 
 class KisaanViewModel : ViewModel() {
@@ -101,8 +115,12 @@ class KisaanViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(
             showOnboarding = !localStore.onboardingDone,
             fontScale = localStore.fontScale,
-            submittedTickets = localStore.loadRequests()
+            submittedTickets = localStore.loadRequests(),
+            farmExpenses = localStore.loadFarmExpenses(),
+            farmDiaryEntries = localStore.loadFarmDiary(),
+            cropPlan = localStore.loadCropPlan()
         )
+        localStore.restoreCropReminder()
         if (localStore.onboardingDone) {
             setIndianLanguage(localStore.indianLanguage)
         }
@@ -120,6 +138,74 @@ class KisaanViewModel : ViewModel() {
 
     fun refreshWeather() {
         fetchWeather(_uiState.value.selectedWeatherLocation)
+    }
+
+    fun saveFarmExpense(expense: FarmExpense) {
+        val entries = listOf(expense) + _uiState.value.farmExpenses
+        store?.saveFarmExpenses(entries)
+        _uiState.value = _uiState.value.copy(farmExpenses = entries)
+    }
+
+    fun deleteFarmExpense(id: String) {
+        val entries = _uiState.value.farmExpenses.filterNot { it.id == id }
+        store?.saveFarmExpenses(entries)
+        _uiState.value = _uiState.value.copy(farmExpenses = entries)
+    }
+
+    fun saveFarmDiaryEntry(entry: FarmDiaryEntry) {
+        val entries = listOf(entry) + _uiState.value.farmDiaryEntries
+        store?.saveFarmDiary(entries)
+        _uiState.value = _uiState.value.copy(farmDiaryEntries = entries)
+    }
+
+    fun deleteFarmDiaryEntry(id: String) {
+        val entries = _uiState.value.farmDiaryEntries.filterNot { it.id == id }
+        store?.saveFarmDiary(entries)
+        _uiState.value = _uiState.value.copy(farmDiaryEntries = entries)
+    }
+
+    fun saveCropPlan(plan: CropPlan?) {
+        store?.saveCropPlan(plan)
+        _uiState.value = _uiState.value.copy(cropPlan = plan)
+    }
+
+    fun setConsultationPrefill(uri: String?, crop: String, problem: String) {
+        _uiState.value = _uiState.value.copy(
+            consultationPhotoUri = uri,
+            consultationCrop = crop,
+            consultationProblem = problem
+        )
+    }
+
+    fun fetchMandiPrices(commodity: String, state: String, district: String = "") {
+        _uiState.value = _uiState.value.copy(
+            mandiPrices = emptyList(),
+            isMandiLoading = true,
+            mandiError = null
+        )
+        viewModelScope.launch {
+            try {
+                val prices = MandiPriceService.fetchPrices(
+                    commodity = commodity.trim(),
+                    state = state.trim(),
+                    apiKey = com.example.BuildConfig.DATA_GOV_IN_API_KEY,
+                    district = district.trim()
+                )
+                _uiState.value = _uiState.value.copy(
+                    mandiPrices = prices,
+                    isMandiLoading = false,
+                    mandiError = if (prices.isEmpty()) {
+                        "No official market records were found for that commodity and state."
+                    } else null
+                )
+            } catch (exception: IOException) {
+                _uiState.value = _uiState.value.copy(
+                    isMandiLoading = false,
+                    mandiError = exception.localizedMessage
+                        ?: "Could not load official mandi prices. Check your connection and try again."
+                )
+            }
+        }
     }
 
     private fun initDefaultChat() {
@@ -251,7 +337,10 @@ class KisaanViewModel : ViewModel() {
                     currentTicket = ticket,
                     submittedTickets = history,
                     currentRoute = ScreenRoute.REQUEST_SENT,
-                    isSubmittingConsultation = false
+                    isSubmittingConsultation = false,
+                    consultationPhotoUri = null,
+                    consultationCrop = null,
+                    consultationProblem = null
                 )
             } catch (exception: IOException) {
                 _uiState.value = _uiState.value.copy(

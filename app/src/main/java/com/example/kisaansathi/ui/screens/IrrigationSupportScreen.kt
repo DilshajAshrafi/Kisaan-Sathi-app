@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
@@ -117,7 +118,7 @@ fun IrrigationSupportScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = if (isHi) "स्मार्ट सिंचाई योजना" else "Smart Irrigation Planner",
+                            text = if (isHi) "à¤¸à¥à¤®à¤¾à¤°à¥à¤Ÿ à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ à¤¯à¥‹à¤œà¤¨à¤¾" else "Smart Irrigation Planner",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -125,7 +126,7 @@ fun IrrigationSupportScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = if (isHi)
-                                "प्रति बूंद अधिक फसल: सूक्ष्म सिंचाई, जल बजट और वैज्ञानिक समय-सारणी।"
+                                "à¤ªà¥à¤°à¤¤à¤¿ à¤¬à¥‚à¤‚à¤¦ à¤…à¤§à¤¿à¤• à¤«à¤¸à¤²: à¤¸à¥‚à¤•à¥à¤·à¥à¤® à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ, à¤œà¤² à¤¬à¤œà¤Ÿ à¤”à¤° à¤µà¥ˆà¤œà¥à¤žà¤¾à¤¨à¤¿à¤• à¤¸à¤®à¤¯-à¤¸à¤¾à¤°à¤£à¥€à¥¤"
                             else
                                 "Per Drop More Crop: Precision scheduling, water budget, and drip efficiency.",
                             style = MaterialTheme.typography.bodySmall,
@@ -182,13 +183,13 @@ fun IrrigationSupportScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "${weatherInfo.temperatureC}°C • ${weatherInfo.conditionTitle}",
+                                    text = "${weatherInfo.temperatureC}Â°C â€¢ ${weatherInfo.conditionTitle}",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "${if (isHi) "हवा" else "Wind"}: ${weatherInfo.windSpeedKmh} km/h | ${if (isHi) "नमी" else "Humidity"}: ${weatherInfo.humidityPercent}%",
+                                    text = "${if (isHi) "à¤¹à¤µà¤¾" else "Wind"}: ${weatherInfo.windSpeedKmh} km/h | ${if (isHi) "à¤¨à¤®à¥€" else "Humidity"}: ${weatherInfo.humidityPercent}%",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -201,7 +202,7 @@ fun IrrigationSupportScreen(
                                         .padding(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
                                     Text(
-                                        text = if (isHi) "🌧️ वर्षा संभावित" else "🌧️ Rain Expected",
+                                        text = if (isHi) "ðŸŒ§ï¸ à¤µà¤°à¥à¤·à¤¾ à¤¸à¤‚à¤­à¤¾à¤µà¤¿à¤¤" else "ðŸŒ§ï¸ Rain Expected",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -220,7 +221,7 @@ fun IrrigationSupportScreen(
                                 .padding(12.dp)
                         ) {
                             Row(verticalAlignment = Alignment.Top) {
-                                Text(text = "💧 ", fontSize = 14.sp)
+                                Text(text = "ðŸ’§ ", fontSize = 14.sp)
                                 Text(
                                     text = if (isHi) weatherInfo.irrigationAdvisoryHi else weatherInfo.irrigationAdvisoryEn,
                                     style = MaterialTheme.typography.bodySmall,
@@ -255,7 +256,7 @@ fun IrrigationSupportScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (isHi) "खेत जल आवश्यकता कैलकुलेटर" else "Farm Water Requirement Calculator",
+                            text = if (isHi) "à¤–à¥‡à¤¤ à¤œà¤² à¤†à¤µà¤¶à¥à¤¯à¤•à¤¤à¤¾ à¤•à¥ˆà¤²à¤•à¥à¤²à¥‡à¤Ÿà¤°" else "Farm Water Requirement Calculator",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -273,10 +274,10 @@ fun IrrigationSupportScreen(
                             value = selectedCrop,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text(if (isHi) "फसल चुनें" else "Select Crop") },
+                            label = { Text(if (isHi) "à¤«à¤¸à¤² à¤šà¥à¤¨à¥‡à¤‚" else "Select Crop") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cropExpanded) },
                             modifier = Modifier
-                                .menuAnchor()
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                                 .fillMaxWidth()
                                 .testTag("calculator_crop_dropdown")
                         )
@@ -307,10 +308,10 @@ fun IrrigationSupportScreen(
                             value = selectedSoil,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text(if (isHi) "मिट्टी का प्रकार" else "Soil Type") },
+                            label = { Text(if (isHi) "à¤®à¤¿à¤Ÿà¥à¤Ÿà¥€ à¤•à¤¾ à¤ªà¥à¤°à¤•à¤¾à¤°" else "Soil Type") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = soilExpanded) },
                             modifier = Modifier
-                                .menuAnchor()
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                                 .fillMaxWidth()
                                 .testTag("calculator_soil_dropdown")
                         )
@@ -336,7 +337,7 @@ fun IrrigationSupportScreen(
                     OutlinedTextField(
                         value = areaText,
                         onValueChange = onAreaChange,
-                        label = { Text(if (isHi) "खेत का क्षेत्रफल (एकड़ में)" else "Field Area (in Acres)") },
+                        label = { Text(if (isHi) "à¤–à¥‡à¤¤ à¤•à¤¾ à¤•à¥à¤·à¥‡à¤¤à¥à¤°à¤«à¤² (à¤à¤•à¤¡à¤¼ à¤®à¥‡à¤‚)" else "Field Area (in Acres)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -354,7 +355,7 @@ fun IrrigationSupportScreen(
                             .testTag("calculate_irrigation_button")
                     ) {
                         Text(
-                            text = if (isHi) "जल बजट व सिंचाई योजना निकालें" else "Calculate Water Budget",
+                            text = if (isHi) "à¤œà¤² à¤¬à¤œà¤Ÿ à¤µ à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ à¤¯à¥‹à¤œà¤¨à¤¾ à¤¨à¤¿à¤•à¤¾à¤²à¥‡à¤‚" else "Calculate Water Budget",
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -371,25 +372,25 @@ fun IrrigationSupportScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = if (isHi) "सिंचाई परिणाम एवं सिफ़ारिश" else "Recommended Irrigation Plan",
+                                    text = if (isHi) "à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ à¤ªà¤°à¤¿à¤£à¤¾à¤® à¤à¤µà¤‚ à¤¸à¤¿à¤«à¤¼à¤¾à¤°à¤¿à¤¶" else "Recommended Irrigation Plan",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "${if (isHi) "दैनिक जल आवश्यकता" else "Daily Water Requirement"}: ${advice.dailyRequirementLiters} Liters",
+                                    text = "${if (isHi) "à¤¦à¥ˆà¤¨à¤¿à¤• à¤œà¤² à¤†à¤µà¤¶à¥à¤¯à¤•à¤¤à¤¾" else "Daily Water Requirement"}: ${advice.dailyRequirementLiters} Liters",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                                 Text(
-                                    text = "${if (isHi) "सिंचाई अंतराल" else "Frequency"}: ${advice.weeklyFrequency}",
+                                    text = "${if (isHi) "à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ à¤…à¤‚à¤¤à¤°à¤¾à¤²" else "Frequency"}: ${advice.weeklyFrequency}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "${if (isHi) "अनुशंसित प्रणाली" else "System"}: ${advice.recommendedSystem}",
+                                    text = "${if (isHi) "à¤…à¤¨à¥à¤¶à¤‚à¤¸à¤¿à¤¤ à¤ªà¥à¤°à¤£à¤¾à¤²à¥€" else "System"}: ${advice.recommendedSystem}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -418,7 +419,7 @@ fun IrrigationSupportScreen(
         // Irrigation Systems Comparison Section
         item {
             Text(
-                text = if (isHi) "सिंचाई पद्धतियों की तुलना" else "Irrigation Systems Comparison",
+                text = if (isHi) "à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ à¤ªà¤¦à¥à¤§à¤¤à¤¿à¤¯à¥‹à¤‚ à¤•à¥€ à¤¤à¥à¤²à¤¨à¤¾" else "Irrigation Systems Comparison",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -428,10 +429,10 @@ fun IrrigationSupportScreen(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 ComparisonCard(
-                    title = if (isHi) "ड्रिप (टपक) सिंचाई" else "Drip Irrigation",
+                    title = if (isHi) "à¤¡à¥à¤°à¤¿à¤ª (à¤Ÿà¤ªà¤•) à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ" else "Drip Irrigation",
                     efficiency = "90% - 95% Water Efficiency",
                     benefit = if (isHi)
-                        "सीधे जड़ क्षेत्र में पानी व उर्वरक (फर्टिगेशन), 50% पानी की बचत, खरपतवार में भारी कमी।"
+                        "à¤¸à¥€à¤§à¥‡ à¤œà¤¡à¤¼ à¤•à¥à¤·à¥‡à¤¤à¥à¤° à¤®à¥‡à¤‚ à¤ªà¤¾à¤¨à¥€ à¤µ à¤‰à¤°à¥à¤µà¤°à¤• (à¤«à¤°à¥à¤Ÿà¤¿à¤—à¥‡à¤¶à¤¨), 50% à¤ªà¤¾à¤¨à¥€ à¤•à¥€ à¤¬à¤šà¤¤, à¤–à¤°à¤ªà¤¤à¤µà¤¾à¤° à¤®à¥‡à¤‚ à¤­à¤¾à¤°à¥€ à¤•à¤®à¥€à¥¤"
                     else
                         "Water & fertilizer delivered directly to root zone; saves 50-60% water, minimizes weeds.",
                     subsidy = "Up to 55% PMKSY Subsidy",
@@ -439,10 +440,10 @@ fun IrrigationSupportScreen(
                 )
 
                 ComparisonCard(
-                    title = if (isHi) "स्प्रिंकलर (फव्वारा) सिंचाई" else "Sprinkler Irrigation",
+                    title = if (isHi) "à¤¸à¥à¤ªà¥à¤°à¤¿à¤‚à¤•à¤²à¤° (à¤«à¤µà¥à¤µà¤¾à¤°à¤¾) à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ" else "Sprinkler Irrigation",
                     efficiency = "75% - 85% Water Efficiency",
                     benefit = if (isHi)
-                        "बारिश की तरह फुहार, गेहूं व सरसों के लिए आदर्श, ऊबड़-खाबड़ खेतों में बिना समतल किए प्रभावी।"
+                        "à¤¬à¤¾à¤°à¤¿à¤¶ à¤•à¥€ à¤¤à¤°à¤¹ à¤«à¥à¤¹à¤¾à¤°, à¤—à¥‡à¤¹à¥‚à¤‚ à¤µ à¤¸à¤°à¤¸à¥‹à¤‚ à¤•à¥‡ à¤²à¤¿à¤ à¤†à¤¦à¤°à¥à¤¶, à¤Šà¤¬à¤¡à¤¼-à¤–à¤¾à¤¬à¤¡à¤¼ à¤–à¥‡à¤¤à¥‹à¤‚ à¤®à¥‡à¤‚ à¤¬à¤¿à¤¨à¤¾ à¤¸à¤®à¤¤à¤² à¤•à¤¿à¤ à¤ªà¥à¤°à¤­à¤¾à¤µà¥€à¥¤"
                     else
                         "Artificial rain simulation, ideal for wheat, mustard & pulses; highly effective on undulating fields.",
                     subsidy = "Up to 45% PMKSY Subsidy",
@@ -450,10 +451,10 @@ fun IrrigationSupportScreen(
                 )
 
                 ComparisonCard(
-                    title = if (isHi) "पारंपरिक खुला बहाव (Flood)" else "Traditional Flood Irrigation",
+                    title = if (isHi) "à¤ªà¤¾à¤°à¤‚à¤ªà¤°à¤¿à¤• à¤–à¥à¤²à¤¾ à¤¬à¤¹à¤¾à¤µ (Flood)" else "Traditional Flood Irrigation",
                     efficiency = "35% - 45% Efficiency Only",
                     benefit = if (isHi)
-                        "अत्यधिक पानी की बर्बादी, पोषक तत्वों का बह जाना और जलभराव से जड़ सड़न का खतरा।"
+                        "à¤…à¤¤à¥à¤¯à¤§à¤¿à¤• à¤ªà¤¾à¤¨à¥€ à¤•à¥€ à¤¬à¤°à¥à¤¬à¤¾à¤¦à¥€, à¤ªà¥‹à¤·à¤• à¤¤à¤¤à¥à¤µà¥‹à¤‚ à¤•à¤¾ à¤¬à¤¹ à¤œà¤¾à¤¨à¤¾ à¤”à¤° à¤œà¤²à¤­à¤°à¤¾à¤µ à¤¸à¥‡ à¤œà¤¡à¤¼ à¤¸à¤¡à¤¼à¤¨ à¤•à¤¾ à¤–à¤¤à¤°à¤¾à¥¤"
                     else
                         "High runoff & evaporation loss; risks nutrient leaching, salinity, and waterlogging rot.",
                     subsidy = "Upgrade to Micro-irrigation recommended",
@@ -484,7 +485,7 @@ fun IrrigationSupportScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = if (isHi) "खेत में नमी जांचने की आसान देसी विधि" else "Hand-Feel Soil Moisture Test",
+                            text = if (isHi) "à¤–à¥‡à¤¤ à¤®à¥‡à¤‚ à¤¨à¤®à¥€ à¤œà¤¾à¤‚à¤šà¤¨à¥‡ à¤•à¥€ à¤†à¤¸à¤¾à¤¨ à¤¦à¥‡à¤¸à¥€ à¤µà¤¿à¤§à¤¿" else "Hand-Feel Soil Moisture Test",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -492,7 +493,7 @@ fun IrrigationSupportScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = if (isHi)
-                                "पौधे के पास 6 इंच गहराई से मुट्ठी भर मिट्टी लें। यदि दबाने पर मिट्टी का लड्डू बन जाए और छूने पर गीला महसूस हो तो पानी न दें। यदि बिखर जाए तो तुरंत हल्की सिंचाई करें।"
+                                "à¤ªà¥Œà¤§à¥‡ à¤•à¥‡ à¤ªà¤¾à¤¸ 6 à¤‡à¤‚à¤š à¤—à¤¹à¤°à¤¾à¤ˆ à¤¸à¥‡ à¤®à¥à¤Ÿà¥à¤ à¥€ à¤­à¤° à¤®à¤¿à¤Ÿà¥à¤Ÿà¥€ à¤²à¥‡à¤‚à¥¤ à¤¯à¤¦à¤¿ à¤¦à¤¬à¤¾à¤¨à¥‡ à¤ªà¤° à¤®à¤¿à¤Ÿà¥à¤Ÿà¥€ à¤•à¤¾ à¤²à¤¡à¥à¤¡à¥‚ à¤¬à¤¨ à¤œà¤¾à¤ à¤”à¤° à¤›à¥‚à¤¨à¥‡ à¤ªà¤° à¤—à¥€à¤²à¤¾ à¤®à¤¹à¤¸à¥‚à¤¸ à¤¹à¥‹ à¤¤à¥‹ à¤ªà¤¾à¤¨à¥€ à¤¨ à¤¦à¥‡à¤‚à¥¤ à¤¯à¤¦à¤¿ à¤¬à¤¿à¤–à¤° à¤œà¤¾à¤ à¤¤à¥‹ à¤¤à¥à¤°à¤‚à¤¤ à¤¹à¤²à¥à¤•à¥€ à¤¸à¤¿à¤‚à¤šà¤¾à¤ˆ à¤•à¤°à¥‡à¤‚à¥¤"
                             else
                                 "Take a handful of soil from 6 inches root depth. If it forms a firm ball and leaves moisture on your palm, delay irrigation. If it crumbles, schedule watering promptly.",
                             style = MaterialTheme.typography.bodySmall,

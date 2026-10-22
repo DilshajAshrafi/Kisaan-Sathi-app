@@ -35,7 +35,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.FilterChip
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Grass
 import androidx.compose.material.icons.filled.History
@@ -1238,9 +1238,15 @@ fun MoreToolsCard(currentLanguage: Language, onNavigate: (ScreenRoute) -> Unit) 
     val isHi = currentLanguage == Language.HINDI
     val tools = listOf(
         Triple(ScreenRoute.MSP_PRICES, if (isHi) "MSP भाव" else "MSP Prices", Icons.Default.CurrencyRupee),
+        Triple(ScreenRoute.MANDI_PRICES, if (isHi) "लाइव मंडी भाव" else "Live Mandi Prices", Icons.Default.Public),
         Triple(ScreenRoute.CROP_CALENDAR, if (isHi) "फसल कैलेंडर" else "Crop Calendar", Icons.Default.CalendarMonth),
         Triple(ScreenRoute.SOIL_HEALTH, if (isHi) "मृदा सहायक" else "Soil Helper", Icons.Default.Grass),
-        Triple(ScreenRoute.MY_REQUESTS, if (isHi) "मेरे अनुरोध" else "My Requests", Icons.Default.History)
+        Triple(ScreenRoute.MY_REQUESTS, if (isHi) "मेरे अनुरोध" else "My Requests", Icons.Default.History),
+        Triple(ScreenRoute.EXPENSE_TRACKER, if (isHi) "खर्च और मुनाफ़ा" else "Farm Profit", Icons.Default.CurrencyRupee),
+        Triple(ScreenRoute.WEATHER_ALERTS, if (isHi) "मौसम अलर्ट" else "Weather Alerts", Icons.Default.WbSunny),
+        Triple(ScreenRoute.FARM_DIARY, if (isHi) "खेत डायरी" else "Farm Diary", Icons.Default.History),
+        Triple(ScreenRoute.SCHEME_ELIGIBILITY, if (isHi) "योजना पात्रता" else "Scheme Finder", Icons.Default.AccountBalance),
+        Triple(ScreenRoute.CROP_PHOTO_GUIDE, if (isHi) "फसल फोटो सहायक" else "Crop Photo Guide", Icons.Default.BugReport)
     )
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
@@ -1322,7 +1328,7 @@ fun TeamContactCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Chat, contentDescription = null)
+                Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text(if (isHi) "WhatsApp पर चैट करें" else "Chat on WhatsApp")
             }

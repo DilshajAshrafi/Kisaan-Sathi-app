@@ -66,8 +66,67 @@ enum class ScreenRoute {
     MSP_PRICES,
     CROP_CALENDAR,
     SOIL_HEALTH,
-    MY_REQUESTS
+    MY_REQUESTS,
+    EXPENSE_TRACKER,
+    WEATHER_ALERTS,
+    FARM_DIARY,
+    SCHEME_ELIGIBILITY,
+    CROP_PHOTO_GUIDE,
+    MANDI_PRICES
 }
+
+data class FarmExpense(
+    val id: String,
+    val crop: String,
+    val description: String,
+    val amount: Double,
+    val isIncome: Boolean,
+    val date: String
+)
+
+data class FarmProfitSummary(
+    val income: Double,
+    val expenses: Double,
+    val net: Double,
+    val netByCrop: Map<String, Double>
+)
+
+fun calculateFarmProfit(expenses: List<FarmExpense>): FarmProfitSummary {
+    val income = expenses.filter { it.isIncome }.sumOf { it.amount }
+    val costs = expenses.filterNot { it.isIncome }.sumOf { it.amount }
+    val netByCrop = expenses.groupBy { it.crop }.mapValues { (_, cropEntries) ->
+        cropEntries.filter { it.isIncome }.sumOf { it.amount } -
+            cropEntries.filterNot { it.isIncome }.sumOf { it.amount }
+    }
+    return FarmProfitSummary(income, costs, income - costs, netByCrop)
+}
+
+data class FarmDiaryEntry(
+    val id: String,
+    val crop: String,
+    val note: String,
+    val date: String,
+    val photoUri: String?
+)
+
+data class CropPlan(
+    val crop: String,
+    val sowingDate: String,
+    val reminderDate: String,
+    val reminderTask: String
+)
+
+data class MandiPrice(
+    val commodity: String,
+    val market: String,
+    val district: String,
+    val state: String,
+    val arrivalDate: String,
+    val minimumPrice: String,
+    val maximumPrice: String,
+    val modalPrice: String,
+    val priceUnit: String
+)
 
 data class CropGuide(
     val id: String,

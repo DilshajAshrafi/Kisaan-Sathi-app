@@ -84,22 +84,6 @@ fun AgriAssistantScreen(
     val context = LocalContext.current
     val speechLocale = speechTag ?: if (isHi) "hi-IN" else "en-IN"
 
-    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
-    DisposableEffect(Unit) {
-        val engine = TextToSpeech(context) { }
-        tts = engine
-        onDispose {
-            engine.stop()
-            engine.shutdown()
-        }
-    }
-    val speak: (String) -> Unit = { text ->
-        tts?.let {
-            it.language = Locale.forLanguageTag(speechLocale)
-            it.speak(text, TextToSpeech.QUEUE_FLUSH, null, "kisaan-reply")
-        }
-    }
-
     val voiceLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val spoken = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
         if (result.resultCode == Activity.RESULT_OK && !spoken.isNullOrBlank()) {
@@ -212,7 +196,7 @@ fun AgriAssistantScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(chatMessages) { message ->
-                MessageBubble(message = message, onSpeak = speak)
+                MessageBubble(message = message)
             }
 
             if (isLoading) {
@@ -327,7 +311,7 @@ fun AgriAssistantScreen(
 }
 
 @Composable
-fun MessageBubble(message: ChatMessage, onSpeak: ((String) -> Unit)? = null) {
+fun MessageBubble(message: ChatMessage) {
     val isUser = message.role == MessageRole.USER
 
     Row(
@@ -373,18 +357,6 @@ fun MessageBubble(message: ChatMessage, onSpeak: ((String) -> Unit)? = null) {
                     color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
                     lineHeight = 20.sp
                 )
-                if (!isUser && onSpeak != null) {
-                    IconButton(
-                        onClick = { onSpeak(message.text) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = "Read aloud",
-                            tint = Green800
-                        )
-                    }
-                }
             }
         }
 

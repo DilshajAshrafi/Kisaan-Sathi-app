@@ -25,6 +25,9 @@ android {
     val geminiKey = envProperties.getProperty("GEMINI_API_KEY")
         ?: System.getenv("GEMINI_API_KEY")
         ?: ""
+    val dataGovApiKey = envProperties.getProperty("DATA_GOV_IN_API_KEY")
+        ?: System.getenv("DATA_GOV_IN_API_KEY")
+        ?: ""
 
     defaultConfig {
         applicationId = "com.aistudio.kisaansathi.kxmpzq"
@@ -37,6 +40,7 @@ android {
 
         buildConfigField("String", "OPENWEATHER_API_KEY", "\"$openWeatherKey\"")
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
+        buildConfigField("String", "DATA_GOV_IN_API_KEY", "\"$dataGovApiKey\"")
     }
 
     buildTypes {

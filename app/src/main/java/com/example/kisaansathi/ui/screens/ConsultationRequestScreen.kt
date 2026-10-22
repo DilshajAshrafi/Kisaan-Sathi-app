@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalContext
+import android.net.Uri
 import com.example.kisaansathi.data.ConsultationAttachment
 import com.example.kisaansathi.data.FormSubmitService
 import androidx.compose.material3.ButtonDefaults
@@ -56,6 +57,9 @@ fun ConsultationRequestScreen(
     currentLanguage: Language,
     isSubmitting: Boolean,
     submissionError: String?,
+    initialPhotoUri: String? = null,
+    initialCrop: String? = null,
+    initialProblem: String? = null,
     onSubmit: (String, String, String, String, String, String, String, ConsultationAttachment?) -> Unit
 ) {
     val isHi = currentLanguage == Language.HINDI
@@ -66,10 +70,19 @@ fun ConsultationRequestScreen(
     var phone by remember { mutableStateOf("") }
     var financialAid by remember { mutableStateOf("") }
     var villageDistrict by remember { mutableStateOf("") }
-    var crop by remember { mutableStateOf("") }
-    var problemDescription by remember { mutableStateOf("") }
-    var attachment by remember { mutableStateOf<ConsultationAttachment?>(null) }
-    var formError by remember { mutableStateOf<String?>(null) }
+    var crop by remember(initialCrop) { mutableStateOf(initialCrop.orEmpty()) }
+    var problemDescription by remember(initialProblem) { mutableStateOf(initialProblem.orEmpty()) }
+    var attachment by remember(initialPhotoUri) {
+        mutableStateOf(initialPhotoUri?.let { readAttachment(context, Uri.parse(it)) })
+    }
+    var formError by remember(initialPhotoUri) {
+        mutableStateOf(
+            if (initialPhotoUri != null && attachment == null) {
+                if (isHi) "चुनी गई तस्वीर पढ़ी नहीं जा सकी। कृपया इसे फिर से जोड़ें।"
+                else "The selected photo could not be read. Please attach it again."
+            } else null
+        )
+    }
 
     val mediaPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
@@ -104,7 +117,7 @@ fun ConsultationRequestScreen(
                 Column(modifier = Modifier.padding(20.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.Assignment,
+                            imageVector = Icons.AutoMirrored.Filled.Assignment,
                             contentDescription = null,
                             tint = Green800,
                             modifier = Modifier.size(28.dp)

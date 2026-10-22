@@ -10,17 +10,15 @@ This application has been rewritten from the original web application into a com
 
 You can download and install the pre-built APK directly onto any Android phone (Android 7.0 / API 24 or newer):
 
-- **📥 Download APK**: [`Kisaan-Sathi.apk`](./Kisaan-Sathi.apk) (18 MB)
+- **📥 Download APK**: [`kisaan-sathi.apk`](./kisaan-sathi.apk) (18 MB)
 - **Install Instructions**:
-  1. Download `Kisaan-Sathi.apk` to your phone.
+  1. Download `kisaan-sathi.apk` to your phone.
   2. Tap the downloaded file and select **Install** (allow "Install from Unknown Sources" if prompted).
   3. Open **Kisaan Sathi** and select your language.
 
 ---
 
 ## 🌟 Core Features
-
-- **New in this version**: first-launch intro, MSP price guide (reference rates, not live mandi prices), crop calendar, soil health helper, "My Requests" history, voice input and read-aloud in the AI assistant, text-size control, WhatsApp contact, offline weather copy and a remembered language.
 
 1. **🌾 Crop Consultation & Agronomic Planning**
    - Detailed advisories for major Indian crops: Wheat (गेहूं), Paddy/Rice (धान), Mustard (सरसों), Cotton (कपास), and Pulses (चना).
@@ -54,19 +52,35 @@ You can download and install the pre-built APK directly onto any Android phone (
 
 6. **📋 Expert Consultation Booking & Ticket Management**
    - Request consultation directly with Project Coordinator Dr. Pushpendra Tyagi and the Group 11 IDT team.
-   - View member photos and contact Group 11 IDT at **+91 8081392456** or **group11idt@outlook.com**.
    - Generates unique ticket tracking numbers (e.g. `KS-XXXXXX`) with status updates.
 
-7. **📞 Group 11 IDT Support**
-   - One-tap direct dialer for Group 11 IDT at **+91 8081392456** and email support at **group11idt@outlook.com**.
-   - Consultation requests are emailed to the team through FormSubmit, the same service as the website form (name, email, phone, financial aid, address, issue, optional photo/video up to 4 MB). The recipient must complete FormSubmit's first-time email verification before requests can be delivered.
-   - Website: [kissansathiindia.vercel.app](https://kissansathiindia.vercel.app/), also reachable from the app's Home screen.
+7. **🚨 Emergency Kisan Call Center Support**
+   - One-tap direct dialer for the Government of India's toll-free Kisan Call Center: **1800-180-1551** (6:00 AM – 10:00 PM).
 
 8. **🌐 Multi-lingual Support & Theming**
    - Supports 8 major Indian languages: English, Hindi (हिंदी), Punjabi (ਪੰਜਾਬੀ), Bengali (বাংলা), Gujarati (ગુજરાતી), Marathi (मराठी), Tamil (தமிழ்), Telugu (తెలుగు).
-   - Dark mode preference is remembered between app launches, with Material Design 3 adaptive colors.
+   - Full dark and light mode theming adhering to Material Design 3.
+
+9. **🗓️ Crop Plans & Reminders**
+   - Save a crop and sowing date, then schedule a local field-task reminder. Notifications can be enabled in Android settings.
+10. **💰 Farm Expense & Profit Tracker**
+    - Record crop expenses and sales, and view net totals for the whole farm and each crop. Records stay on the device.
+11. **📈 Live Mandi Prices**
+    - Query official AGMARKNET records through data.gov.in by commodity and state. Live results require an API key; the app does not substitute sample prices.
+12. **⛅ Weather & Field Alerts**
+    - Highlights heat, wind, rain, and humidity thresholds from the latest available weather reading. These are current-condition alerts, not a forecast.
+13. **📔 Farm Diary**
+    - Save dated crop observations and photos on the device.
+14. **✅ Scheme Eligibility Helper**
+    - Suggests official scheme portals to check based on farmer-selected answers; it does not determine or guarantee eligibility.
+15. **📷 Crop Photo & Symptom Guide**
+    - Lets farmers note symptoms and attach a photo to an expert consultation. It does not automatically diagnose crop images.
 
 ---
+
+## Live Mandi Price Setup
+
+Create a local `.env` file from `.env.example` and set `DATA_GOV_IN_API_KEY` to an API key issued by [data.gov.in](https://data.gov.in/). Rebuild the Android app after setting the key. Without it, live market prices are reported as unavailable; no sample rates are shown as current prices. Do not commit the local `.env` file. Android build configuration embeds this key in the APK, so use a restricted key or a server-side proxy for public distribution.
 
 ## 🏗️ Architecture & Tech Stack
 
@@ -76,4 +90,4 @@ You can download and install the pre-built APK directly onto any Android phone (
 - **Architecture**: MVVM (Model-View-ViewModel) + Clean Architecture
 - **State Management**: Kotlin Coroutines & `MutableStateFlow` / `StateFlow`
 - **Gradle**: Kotlin DSL (`build.gradle.kts`) with Version Catalog (`gradle/libs.versions.toml`)
-- **Assets**: Single-image adaptive launcher icon using the supplied Kisaan Sathi icon artwork.
+- **Assets**: Adaptive vector launcher icon with golden wheat & leaf sprout motif.

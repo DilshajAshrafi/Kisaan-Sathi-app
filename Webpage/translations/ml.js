@@ -187,7 +187,7 @@ if (typeof window !== "undefined") {
     "Offers collateral-free loans up to ₹10 lakh to non-corporate, non-farm small and micro-enterprises through commercial banks and NBFCs.": "വാണിജ്യ ബാങ്കുകളും NBFCകളും വഴി കോർപ്പറേറ്റ് അല്ലാത്ത, കാർഷികേതര ചെറുകിട, സൂക്ഷ്മ സംരംഭങ്ങൾക്ക് ₹10 lakh വരെ ഈടില്ലാ വായ്പ നൽകുന്നു.",
     "A credit-linked subsidy program aimed at generating employment opportunities in rural and urban areas by funding the establishment of micro-enterprises.": "സൂക്ഷ്മ സംരംഭങ്ങൾ സ്ഥാപിക്കുന്നതിന് ധനസഹായം നൽകി ഗ്രാമ, നഗര മേഖലകളിൽ തൊഴിൽ സൃഷ്ടിക്കാൻ ലക്ഷ്യമിടുന്ന വായ്പാ ബന്ധിത സബ്സിഡി പദ്ധതി.",
     "Facilitates bank loans between ₹10 lakh and ₹1 crore to at least one SC/ST borrower and one woman borrower per bank branch to set up a greenfield enterprise in manufacturing, services, or trading.": "ഓരോ ബാങ്ക് ശാഖയിലും കുറഞ്ഞത് ഒരു SC/ST വായ്പക്കാരനും ഒരു വനിതാ വായ്പക്കാരനും ഉൽപ്പാദനം, സേവനം, വ്യാപാരം എന്നിവയിൽ പുതിയ സംരംഭം തുടങ്ങാൻ ₹10 lakh മുതൽ ₹1 crore വരെ വായ്പ ലഭ്യമാക്കുന്നു.",
-    "Provides early-stage startups with financial assistance for proof of concept, prototype development, product trials, and commercialization.": "ആദ്യഘട്ട സ്റ്റാർട്ടപ്പുകൾക്ക് ആശയത്തിന്റെ തെളിവ്, മാതൃകാ വികസനം, ഉൽപ്പന്ന പരീക്ഷണം, വാണിജ്യവൽക്കരണം എന്നിവയ്ക്ക് സാമ്പത്തിക സഹായം നൽകുന്നു."
+    "Provides early-stage startups with financial assistance for proof of concept, prototype development, product trials, and commercialization.": "ആദ്യഘട്ട സ്റ്റാർട്ടപ്പുകൾക്ക് ആശയത്തിന്റെ തെളിവ്, മാതൃകാ വികസനം, ഉൽപ്പന്ന പരീക്ഷണം, വാണിജ്യവൽക്കരണം എന്നിവയ്ക്ക് സാമ്പത്തിക സഹായം നൽകുന്നു.",
     "Ask Agri AI": "Agri AI-യോട് ചോദിക്കുക",
     "Open agriculture assistant": "കൃഷി സഹായി തുറക്കുക",
     "Close agriculture assistant": "കൃഷി സഹായി അടയ്ക്കുക",
